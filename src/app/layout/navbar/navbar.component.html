@@ -1,18 +1,35 @@
-<header class="navbar">
+<header class="navbar-container">
 
   <div class="navbar-left">
-    <h5>Panel de administración</h5>
+    <div class="page-title">
+    <h2>{{ tituloPagina }}</h2>
+<span>{{ descripcionPagina }}</span>
+    </div>
   </div>
 
   <div class="navbar-right">
 
-    <div class="user-info">
-      <span class="user-avatar">A</span>
+    <div class="navbar-date">
+      <i class="bi bi-calendar3"></i>
+      <span>{{ fechaActual | date:'dd/MM/yyyy' }}</span>
+    </div>
 
-      <div>
-        <strong>Administrador</strong>
-        <small>Usuario del sistema</small>
+    <div class="navbar-notification">
+      <i class="bi bi-bell"></i>
+      <span class="notification-badge"></span>
+    </div>
+
+    <div class="user-profile">
+      <div class="user-avatar">
+        <i class="bi bi-person-fill"></i>
       </div>
+
+      <div class="user-info">
+        <strong>Administrador</strong>
+        <span>Usuario del sistema</span>
+      </div>
+
+      <i class="bi bi-chevron-down"></i>
     </div>
 
   </div>

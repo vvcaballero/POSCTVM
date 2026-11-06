@@ -1,39 +1,62 @@
+
 .sidebar {
   width: 250px;
   min-height: 100vh;
   background: #172b4d;
-  color: white;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
 }
 
+/* MARCA */
 .sidebar-brand {
-  padding: 25px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 18px;
   border-bottom: 1px solid #344563;
 }
 
-.sidebar-brand h3 {
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  background: #315b91;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-icon i {
+  font-size: 23px;
+  color: #ffffff;
+}
+
+.brand-info h3 {
   margin: 0;
+  font-size: 19px;
   font-weight: 700;
   letter-spacing: 1px;
 }
 
-.sidebar-brand span {
-  font-size: 12px;
+.brand-info span {
+  font-size: 11px;
   color: #b3c0ce;
 }
 
+/* MENÚ */
 .sidebar-menu {
-  padding: 20px 12px;
+  padding: 18px 12px;
   flex: 1;
 }
 
 .menu-title {
-  font-size: 11px;
+  font-size: 10px;
   color: #9fb3c8;
-  font-weight: bold;
-  margin: 20px 10px 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  margin: 22px 10px 10px;
 }
 
 .menu-item {
@@ -42,38 +65,83 @@
   gap: 12px;
   padding: 12px;
   margin-bottom: 5px;
-  border-radius: 6px;
+  border-radius: 7px;
   color: #dfe7f0;
   text-decoration: none;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.menu-item i {
+  font-size: 19px;
+  width: 23px;
+  text-align: center;
 }
 
 .menu-item:hover {
   background: #263f65;
-  color: white;
+  color: #ffffff;
 }
 
 .menu-item.active {
   background: #315b91;
-  color: white;
+  color: #ffffff;
+  font-weight: 600;
 }
 
 .menu-item.disabled {
-  opacity: 0.55;
+  opacity: 0.50;
   cursor: not-allowed;
 }
 
+/* ETIQUETA */
+.coming-soon {
+  font-size: 9px;
+  margin-left: auto;
+  color: #b3c0ce;
+}
+
+/* FOOTER */
 .sidebar-footer {
-  padding: 18px;
+  padding: 18px 12px;
   text-align: center;
-  font-size: 12px;
+  font-size: 11px;
   color: #9fb3c8;
   border-top: 1px solid #344563;
 }
 
+.footer-status {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 8px;
+  color: #dfe7f0;
+}
+
+.status-indicator {
+  width: 8px;
+  height: 8px;
+  background: #22c55e;
+  border-radius: 50%;
+}
+
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .sidebar {
     width: 190px;
+  }
+
+  .brand-info h3 {
+    font-size: 16px;
+  }
+
+  .menu-item {
+    font-size: 12px;
+  }
+
+  .coming-soon {
+    display: none;
   }
 }

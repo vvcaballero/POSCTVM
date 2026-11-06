@@ -1,61 +1,95 @@
+
 <aside class="sidebar">
 
+  <!-- LOGOTIPO -->
   <div class="sidebar-brand">
-    <h3>POSCTVM</h3>
-    <span>Sistema Punto de Venta</span>
+    <div class="brand-icon">
+      <i class="bi bi-shop"></i>
+    </div>
+
+    <div class="brand-info">
+      <h3>POSCTVM</h3>
+      <span>Sistema Punto de Venta</span>
+    </div>
   </div>
 
+  <!-- MENÚ -->
   <div class="sidebar-menu">
 
     <p class="menu-title">PRINCIPAL</p>
 
-    <a routerLink="/productos"
+    <!-- DASHBOARD -->
+    <a routerLink="/dashboard"
        routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
        class="menu-item">
-      <span>📦</span>
-      Productos
+
+      <i class="bi bi-speedometer2"></i>
+      <span>Dashboard</span>
     </a>
 
+    <!-- PRODUCTOS -->
+    <a routerLink="/productos"
+       routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
+       class="menu-item">
+
+      <i class="bi bi-box-seam"></i>
+      <span>Productos</span>
+    </a>
+
+    <!-- USUARIOS -->
     <a routerLink="/usuarios"
        routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
        class="menu-item">
-      <span>👥</span>
-      Usuarios
+
+      <i class="bi bi-people"></i>
+      <span>Usuarios</span>
     </a>
 
     <p class="menu-title">OPERACIONES</p>
 
-    <a class="menu-item disabled">
-      <span>🛒</span>
-      Ventas
-    </a>
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-cart3"></i>
+      <span>Ventas</span>
+      <span class="coming-soon">Próximamente</span>
+    </div>
 
-    <a class="menu-item disabled">
-      <span>📋</span>
-      Inventario
-    </a>
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-clipboard-data"></i>
+      <span>Inventario</span>
+    </div>
 
-    <a class="menu-item disabled">
-      <span>🛍️</span>
-      Compras
-    </a>
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-bag-check"></i>
+      <span>Compras</span>
+    </div>
 
     <p class="menu-title">ADMINISTRACIÓN</p>
 
-    <a class="menu-item disabled">
-      <span>📊</span>
-      Reportes
-    </a>
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-bar-chart-line"></i>
+      <span>Reportes</span>
+    </div>
 
-    <a class="menu-item disabled">
-      <span>⚙️</span>
-      Configuración
-    </a>
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-gear"></i>
+      <span>Configuración</span>
+    </div>
 
   </div>
 
+  <!-- PIE DEL MENÚ -->
   <div class="sidebar-footer">
-    POSCTVM © 2026
+
+    <div class="footer-status">
+      <span class="status-indicator"></span>
+      Sistema activo
+    </div>
+
+    <span>POSCTVM © 2026</span>
+
   </div>
 
 </aside>
