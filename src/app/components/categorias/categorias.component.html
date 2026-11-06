@@ -1,1 +1,194 @@
-<p>categorias works!</p>
+```html
+<div class="container-fluid">
+
+  <!-- ENCABEZADO -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h2 class="fw-bold">Categorías</h2>
+      <p class="text-muted mb-0">
+        Administración de categorías de productos
+      </p>
+    </div>
+
+    <button class="btn btn-primary"
+            (click)="limpiarFormulario()">
+      <i class="bi bi-plus-circle me-2"></i>
+      Nueva categoría
+    </button>
+  </div>
+
+  <!-- MENSAJES -->
+  <div *ngIf="mensaje" class="alert alert-success">
+    {{ mensaje }}
+  </div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div class="row">
+
+    <!-- FORMULARIO -->
+    <div class="col-lg-4 mb-4">
+
+      <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold">
+            {{ editando ? 'Editar categoría' : 'Registrar categoría' }}
+          </h5>
+        </div>
+
+        <div class="card-body">
+
+          <form (ngSubmit)="guardarCategoria()" #formCategoria="ngForm">
+
+            <div class="mb-3">
+              <label class="form-label">Nombre</label>
+
+              <input
+                type="text"
+                class="form-control"
+                name="nombre"
+                [(ngModel)]="categoria.nombre"
+                required
+                placeholder="Nombre de categoría">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Descripción</label>
+
+              <textarea
+                class="form-control"
+                name="descripcion"
+                [(ngModel)]="categoria.descripcion"
+                rows="4"
+                placeholder="Descripción de la categoría">
+              </textarea>
+            </div>
+
+            <div class="d-flex gap-2">
+
+              <button
+                type="submit"
+                class="btn btn-primary flex-grow-1"
+                [disabled]="formCategoria.invalid">
+
+                {{ editando ? 'Actualizar' : 'Guardar' }}
+
+              </button>
+
+              <button
+                type="button"
+                class="btn btn-secondary"
+                (click)="limpiarFormulario()">
+                Limpiar
+              </button>
+
+            </div>
+
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLA -->
+    <div class="col-lg-8">
+
+      <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-white py-3">
+          <h5 class="mb-0 fw-bold">
+            Listado de categorías
+          </h5>
+        </div>
+
+        <div class="card-body">
+
+          <!-- CARGANDO -->
+          <div *ngIf="cargando" class="text-center py-4">
+            <div class="spinner-border text-primary"></div>
+            <p class="mt-2">Cargando categorías...</p>
+          </div>
+
+          <!-- TABLA -->
+          <div class="table-responsive" *ngIf="!cargando">
+
+            <table class="table table-hover align-middle">
+
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Nombre</th>
+                  <th>Descripción</th>
+                  <th>Estado</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+
+              <tbody>
+
+                <tr *ngFor="let item of categorias">
+
+                  <td>{{ item.idCategoria }}</td>
+
+                  <td class="fw-semibold">
+                    {{ item.nombre }}
+                  </td>
+
+                  <td>
+                    {{ item.descripcion || 'Sin descripción' }}
+                  </td>
+
+                  <td>
+                    <span
+                      class="badge"
+                      [ngClass]="item.activo ? 'bg-success' : 'bg-secondary'">
+                      {{ item.activo ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td>
+
+                  <td>
+                    <div class="d-flex gap-2">
+
+                      <button
+                        class="btn btn-sm btn-outline-primary"
+                        title="Editar"
+                        (click)="editarCategoria(item)">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+
+                      <button
+                        class="btn btn-sm btn-outline-danger"
+                        title="Desactivar"
+                        [disabled]="!item.activo"
+                        (click)="eliminarCategoria(item.idCategoria)">
+                        <i class="bi bi-trash"></i>
+                      </button>
+
+                    </div>
+                  </td>
+
+                </tr>
+
+                <!-- SIN REGISTROS -->
+                <tr *ngIf="categorias.length === 0">
+                  <td colspan="5" class="text-center text-muted py-4">
+                    No hay categorías registradas.
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+```

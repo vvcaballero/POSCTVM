@@ -1,0 +1,67 @@
+.container-fluid {
+  padding: 10px;
+}
+
+h2 {
+  color: #263238;
+}
+
+.card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.card-header {
+  border-bottom: 1px solid #eee;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.form-control {
+  padding: 10px;
+  border-radius: 7px;
+}
+
+.form-control:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.btn {
+  border-radius: 7px;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table th {
+  font-size: 13px;
+  white-space: nowrap;
+  color: #495057;
+}
+
+.table td {
+  font-size: 14px;
+}
+
+.badge {
+  padding: 7px 10px;
+  font-weight: 500;
+}
+
+.alert {
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .container-fluid {
+    padding: 5px;
+  }
+
+  .card-body {
+    padding: 12px;
+  }
+}
