@@ -1,6 +1,6 @@
 export interface Producto {
-
-  idProducto: number;
+  
+  idProducto?: number;
   codigo: string;
   nombre: string;
   descripcion: string;
@@ -10,5 +10,4 @@ export interface Producto {
   stock: number;
   stockMinimo: number;
   activo: boolean;
-
 }
