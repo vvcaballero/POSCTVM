@@ -1,11 +1,118 @@
 <div class="dashboard-container">
 
-  <h2>Panel de control</h2>
+  <!-- Encabezado -->
+  <div class="dashboard-header">
+    <div>
+      <h2>Panel de control</h2>
+      <p>Resumen general de tu negocio</p>
+    </div>
 
-  <p>Bienvenido al sistema POSCTVM.</p>
+    <div class="dashboard-date">
+      <i class="bi bi-calendar3"></i>
+      POSCTVM
+    </div>
+  </div>
 
-  <p>
-    Desde aquí podrás consultar el resumen general de tu negocio.
-  </p>
+  <!-- Tarjetas de indicadores -->
+  <div class="dashboard-cards">
+
+    <div class="dashboard-card">
+      <div class="card-icon sales">
+        <i class="bi bi-currency-dollar"></i>
+      </div>
+      <div class="card-info">
+        <span>Ventas del día</span>
+        <h3>$0.00</h3>
+        <small>Pendiente de conectar</small>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-icon products">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="card-info">
+        <span>Productos registrados</span>
+        <h3>--</h3>
+        <small>Pendiente de conectar</small>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-icon orders">
+        <i class="bi bi-receipt"></i>
+      </div>
+      <div class="card-info">
+        <span>Ventas realizadas</span>
+        <h3>0</h3>
+        <small>Pendiente de conectar</small>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-icon stock">
+        <i class="bi bi-exclamation-triangle"></i>
+      </div>
+      <div class="card-info">
+        <span>Productos con stock bajo</span>
+        <h3>0</h3>
+        <small>Pendiente de conectar</small>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Secciones principales -->
+  <div class="dashboard-sections">
+
+    <div class="dashboard-panel sales-panel">
+      <div class="panel-header">
+        <h4>Resumen de ventas</h4>
+        <span>Últimos 7 días</span>
+      </div>
+
+      <div class="empty-state">
+        <i class="bi bi-bar-chart-line"></i>
+        <p>La gráfica aparecerá cuando conectemos el módulo de ventas.</p>
+      </div>
+    </div>
+
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h4>Últimas ventas</h4>
+        <span>Movimientos recientes</span>
+      </div>
+
+      <div class="empty-state">
+        <i class="bi bi-receipt-cutoff"></i>
+        <p>Aún no hay ventas para mostrar.</p>
+      </div>
+    </div>
+
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h4>Alertas de inventario</h4>
+        <span>Stock bajo</span>
+      </div>
+
+      <div class="empty-state">
+        <i class="bi bi-box-seam"></i>
+        <p>Las alertas aparecerán cuando conectemos el inventario.</p>
+      </div>
+    </div>
+
+    <div class="dashboard-panel">
+      <div class="panel-header">
+        <h4>Productos más vendidos</h4>
+        <span>Más populares</span>
+      </div>
+
+      <div class="empty-state">
+        <i class="bi bi-trophy"></i>
+        <p>La información aparecerá cuando tengamos registros de ventas.</p>
+      </div>
+    </div>
+
+  </div>
 
 </div>
