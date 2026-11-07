@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 
+import { LoginComponent } from './components/login/login.component';
 import { UsuariosComponent } from './components/usuarios/usuarios.component';
 import { ProductosComponent } from './components/productos/productos.component';
 import { ClientesComponent } from './components/clientes/clientes.component';
@@ -9,16 +10,24 @@ import { CategoriasComponent } from './components/categorias/categorias.componen
 
 export const routes: Routes = [
 
+  // LOGIN
+  {
+    path: 'login',
+    component: LoginComponent
+  },
+
+  // PÁGINA PRINCIPAL
+  {
+    path: '',
+    redirectTo: 'login',
+    pathMatch: 'full'
+  },
+
+  // SISTEMA POS
   {
     path: '',
     component: MainLayoutComponent,
     children: [
-
-      {
-        path: '',
-        redirectTo: 'dashboard',
-        pathMatch: 'full'
-      },
 
       {
         path: 'dashboard',
@@ -48,9 +57,10 @@ export const routes: Routes = [
     ]
   },
 
+  // RUTA NO ENCONTRADA
   {
     path: '**',
-    redirectTo: 'dashboard'
+    redirectTo: 'login'
   }
 
 ];
