@@ -19,19 +19,16 @@ export class InventarioService {
 
   constructor(private http: HttpClient) {}
 
-  // CONSULTAR TODOS LOS MOVIMIENTOS
   getMovimientos(): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/all`);
   }
 
-  // CONSULTAR MOVIMIENTOS POR PRODUCTO
   getMovimientosPorProducto(idProducto: number): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(
       `${this.apiUrl}/producto/${idProducto}`
     );
   }
 
-  // REGISTRAR MOVIMIENTO
   registrarMovimiento(
     movimiento: MovimientoRequest
   ): Observable<ResponseDTO> {
@@ -40,5 +37,4 @@ export class InventarioService {
       movimiento
     );
   }
-
 }

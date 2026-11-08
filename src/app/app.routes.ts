@@ -7,6 +7,7 @@ import { ClientesComponent } from './components/clientes/clientes.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 import { CategoriasComponent } from './components/categorias/categorias.component';
+import { InventarioComponent } from './components/inventario/inventario.component';
 
 export const routes: Routes = [
 
@@ -53,6 +54,13 @@ export const routes: Routes = [
         path: 'usuarios',
         component: UsuariosComponent
       }
+      ,
+      {
+        path: 'inventario',
+        component: InventarioComponent
+      }
+      
+      
 
     ]
   },

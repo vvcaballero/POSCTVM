@@ -70,21 +70,26 @@
 
     </a>
 
-
-
     <p class="menu-title">OPERACIONES</p>
 
+    <!-- VENTAS -->
     <div class="menu-item disabled" aria-disabled="true">
       <i class="bi bi-cart3"></i>
       <span>Ventas</span>
       <span class="coming-soon">Próximamente</span>
     </div>
 
-    <div class="menu-item disabled" aria-disabled="true">
+    <!-- INVENTARIO -->
+    <a routerLink="/inventario"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      class="menu-item">
+
       <i class="bi bi-clipboard-data"></i>
       <span>Inventario</span>
-    </div>
+    </a>
 
+    <!-- COMPRAS -->
     <div class="menu-item disabled" aria-disabled="true">
       <i class="bi bi-bag-check"></i>
       <span>Compras</span>
