@@ -1,1 +1,344 @@
-<p>ventas works!</p>
+
+<div class="ventas-container">
+
+  <header class="page-header">
+    <div>
+      <h1><i class="bi bi-receipt"></i> Historial de ventas</h1>
+      <p>Consulta, filtra y administra las ventas registradas.</p>
+    </div>
+
+    <button class="btn-refresh" type="button"
+      (click)="cargarDatos()" [disabled]="cargando">
+      <i class="bi bi-arrow-clockwise"></i>
+      Actualizar
+    </button>
+  </header>
+
+  <!-- MENSAJES -->
+  <div *ngIf="mensaje" class="alert-message"
+    [class.success]="tipoMensaje === 'success'"
+    [class.error]="tipoMensaje === 'error'">
+    <i class="bi"
+      [class.bi-check-circle-fill]="tipoMensaje === 'success'"
+      [class.bi-exclamation-circle-fill]="tipoMensaje === 'error'">
+    </i>
+    {{ mensaje }}
+    <button type="button" (click)="mensaje = ''">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- INDICADORES -->
+  <section class="stats-grid">
+    <article class="stat-card">
+      <div class="stat-icon blue"><i class="bi bi-receipt"></i></div>
+      <div>
+        <span>Total de registros</span>
+        <strong>{{ ventas.length }}</strong>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon green"><i class="bi bi-check-circle"></i></div>
+      <div>
+        <span>Ventas pagadas</span>
+        <strong>{{ totalVentasPagadas }}</strong>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon purple"><i class="bi bi-currency-dollar"></i></div>
+      <div>
+        <span>Importe vendido</span>
+        <strong>{{ importeVentasPagadas | currency:'MXN':'symbol':'1.2-2' }}</strong>
+      </div>
+    </article>
+
+    <article class="stat-card">
+      <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
+      <div>
+        <span>Ventas canceladas</span>
+        <strong>{{ totalVentasCanceladas }}</strong>
+      </div>
+    </article>
+  </section>
+
+  <!-- FILTROS -->
+  <section class="filters-card">
+    <div class="filters-heading">
+      <div>
+        <h2><i class="bi bi-funnel"></i> Filtros de búsqueda</h2>
+        <p>Localiza ventas por folio, fechas, cliente, usuario o estado.</p>
+      </div>
+
+      <button type="button" class="btn-clean" (click)="limpiarFiltros()">
+        <i class="bi bi-eraser"></i> Limpiar filtros
+      </button>
+    </div>
+
+    <div class="filters-grid">
+      <div class="filter-group search-filter">
+        <label>Buscar</label>
+        <div class="search-input">
+          <i class="bi bi-search"></i>
+          <input type="text" name="busqueda"
+            [(ngModel)]="busqueda"
+            placeholder="Folio, cliente o usuario...">
+        </div>
+      </div>
+
+      <div class="filter-group">
+        <label>Estado</label>
+        <select name="filtroEstado" [(ngModel)]="filtroEstado">
+          <option value="">Todos los estados</option>
+          <option value="PAGADA">Pagada</option>
+          <option value="CANCELADA">Cancelada</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Cliente</label>
+        <select name="filtroCliente" [(ngModel)]="filtroCliente">
+          <option [ngValue]="null">Todos los clientes</option>
+          <option *ngFor="let cliente of clientes"
+            [ngValue]="cliente.idCliente">
+            {{ cliente.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Usuario</label>
+        <select name="filtroUsuario" [(ngModel)]="filtroUsuario">
+          <option [ngValue]="null">Todos los usuarios</option>
+          <option *ngFor="let usuario of usuarios"
+            [ngValue]="usuario.idUsuario">
+            {{ usuario.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>Fecha desde</label>
+        <input type="date" name="fechaDesde" [(ngModel)]="fechaDesde">
+      </div>
+
+      <div class="filter-group">
+        <label>Fecha hasta</label>
+        <input type="date" name="fechaHasta" [(ngModel)]="fechaHasta">
+      </div>
+    </div>
+  </section>
+
+  <!-- TABLA -->
+  <section class="table-card">
+    <div class="table-heading">
+      <div>
+        <h2>Registro de ventas</h2>
+        <p>{{ ventasFiltradas.length }} resultado(s) encontrado(s)</p>
+      </div>
+    </div>
+
+    <div *ngIf="cargando" class="loading-state">
+      <i class="bi bi-arrow-repeat spinning"></i>
+      Cargando historial...
+    </div>
+
+    <div class="table-responsive" *ngIf="!cargando">
+      <table>
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Fecha</th>
+            <th>Cliente</th>
+            <th>Usuario</th>
+            <th>Subtotal</th>
+            <th>Descuento</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let venta of ventasFiltradas">
+            <td class="folio">#{{ venta.idVenta }}</td>
+
+            <td>
+              {{ venta.fechaVenta | date:'dd/MM/yyyy HH:mm' }}
+            </td>
+
+            <td>{{ obtenerNombreCliente(venta.idCliente) }}</td>
+
+            <td>{{ obtenerNombreUsuario(venta.idUsuario) }}</td>
+
+            <td>{{ venta.subtotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+
+            <td class="discount">
+              {{ venta.descuento | currency:'MXN':'symbol':'1.2-2' }}
+            </td>
+
+            <td class="total-cell">
+              {{ venta.total | currency:'MXN':'symbol':'1.2-2' }}
+            </td>
+
+            <td>
+              <span class="status"
+                [class.paid]="venta.estado === 'PAGADA'"
+                [class.cancelled]="venta.estado === 'CANCELADA'">
+                {{ venta.estado }}
+              </span>
+            </td>
+
+            <td>
+              <div class="actions">
+                <button type="button" class="btn-detail"
+                  title="Ver detalle"
+                  (click)="verDetalle(venta.idVenta)">
+                  <i class="bi bi-eye"></i>
+                </button>
+
+                <button type="button" class="btn-cancel"
+                  title="Cancelar venta"
+                  *ngIf="venta.estado === 'PAGADA'"
+                  [disabled]="procesandoCancelacion"
+                  (click)="cancelarVenta(venta)">
+                  <i class="bi bi-x-circle"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="ventasFiltradas.length === 0">
+            <td colspan="9" class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <strong>No se encontraron ventas</strong>
+              <span>Prueba modificando los filtros de búsqueda.</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CARGANDO DETALLE -->
+  <div class="detail-loading" *ngIf="cargandoDetalle">
+    <i class="bi bi-arrow-repeat spinning"></i>
+    Consultando detalle de venta...
+  </div>
+
+  <!-- DETALLE DE VENTA -->
+  <section class="detail-card" *ngIf="detalleSeleccionado as detalle">
+
+    <div class="detail-header">
+      <div>
+        <h2>
+          <i class="bi bi-receipt-cutoff"></i>
+          Detalle de venta #{{ detalle.venta.idVenta }}
+        </h2>
+        <p>
+          {{ detalle.venta.fechaVenta | date:'dd/MM/yyyy HH:mm:ss' }}
+        </p>
+      </div>
+
+      <button type="button" class="btn-close-detail"
+        (click)="cerrarDetalle()">
+        <i class="bi bi-x-lg"></i> Cerrar
+      </button>
+    </div>
+
+    <div class="detail-info-grid">
+      <div>
+        <span>Cliente</span>
+        <strong>{{ obtenerNombreCliente(detalle.venta.idCliente) }}</strong>
+      </div>
+
+      <div>
+        <span>Atendió</span>
+        <strong>{{ obtenerNombreUsuario(detalle.venta.idUsuario) }}</strong>
+      </div>
+
+      <div>
+        <span>Estado</span>
+        <strong>{{ detalle.venta.estado }}</strong>
+      </div>
+    </div>
+
+    <h3>Productos vendidos</h3>
+
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Producto</th>
+            <th>ID producto</th>
+            <th>Cantidad</th>
+            <th>Precio unitario</th>
+            <th>Subtotal</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let item of detalle.detalles">
+            <td>{{ obtenerNombreProducto(item.idProducto) }}</td>
+            <td>{{ item.idProducto }}</td>
+            <td>{{ item.cantidad }}</td>
+            <td>{{ item.precioUnitario | currency:'MXN':'symbol':'1.2-2' }}</td>
+            <td>{{ calcularSubtotalDetalle(item) | currency:'MXN':'symbol':'1.2-2' }}</td>
+          </tr>
+
+          <tr *ngIf="!detalle.detalles || detalle.detalles.length === 0">
+            <td colspan="5" class="empty-state">
+              No hay productos registrados en el detalle.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="detail-bottom">
+      <div class="payments-panel">
+        <h3><i class="bi bi-credit-card"></i> Pagos registrados</h3>
+
+        <div class="payment-row" *ngFor="let pago of detalle.pagos">
+          <div>
+            <strong>{{ nombreMetodoPago(pago.metodoPago) }}</strong>
+            <small *ngIf="pago.referencia">
+              Referencia: {{ pago.referencia }}
+            </small>
+          </div>
+
+          <strong>{{ pago.monto | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+
+        <p *ngIf="!detalle.pagos || detalle.pagos.length === 0">
+          No hay pagos registrados.
+        </p>
+
+        <div class="change-row">
+          <span>Cambio entregado</span>
+          <strong>{{ detalle.cambio | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+      </div>
+
+      <div class="totals-panel">
+        <div>
+          <span>Subtotal</span>
+          <strong>{{ detalle.venta.subtotal | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+
+        <div>
+          <span>Descuento</span>
+          <strong>{{ detalle.venta.descuento | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+
+        <div class="grand-total">
+          <span>Total</span>
+          <strong>{{ detalle.venta.total | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+</div>

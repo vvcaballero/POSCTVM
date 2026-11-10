@@ -1,3 +1,4 @@
+
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
@@ -17,22 +18,18 @@ export class ProductosService {
 
   constructor(private http: HttpClient) {}
 
-  // CONSULTAR TODOS
   getProductos(): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/all`);
   }
 
-  // CONSULTAR POR ID
   getProducto(id: number): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/${id}`);
   }
 
-  // REGISTRAR
   crearProducto(producto: Producto): Observable<ResponseDTO> {
     return this.http.post<ResponseDTO>(this.apiUrl, producto);
   }
 
-  // ACTUALIZAR
   actualizarProducto(
     id: number,
     producto: Producto
@@ -43,7 +40,6 @@ export class ProductosService {
     );
   }
 
-  // ELIMINAR LÓGICAMENTE
   eliminarProducto(id: number): Observable<ResponseDTO> {
     return this.http.delete<ResponseDTO>(`${this.apiUrl}/${id}`);
   }

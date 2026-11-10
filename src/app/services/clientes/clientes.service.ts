@@ -1,12 +1,12 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
 import { Clientes } from '../../interfaces/clientes';
 
 export interface ResponseDTO {
   mensaje: string;
-  body: Clientes[] | Clientes | any;
+  body: Clientes[] | Clientes | null;
 }
 
 @Injectable({
@@ -18,22 +18,18 @@ export class ClientesService {
 
   constructor(private http: HttpClient) {}
 
-  // LISTAR CLIENTES
   getClientes(): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/all`);
   }
 
-  // BUSCAR CLIENTE POR ID
   getCliente(id: number): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/${id}`);
   }
 
-  // REGISTRAR CLIENTE
   crearCliente(cliente: Clientes): Observable<ResponseDTO> {
     return this.http.post<ResponseDTO>(this.apiUrl, cliente);
   }
 
-  // ACTUALIZAR CLIENTE
   actualizarCliente(
     id: number,
     cliente: Clientes
@@ -44,9 +40,7 @@ export class ClientesService {
     );
   }
 
-  // ELIMINAR CLIENTE
   eliminarCliente(id: number): Observable<ResponseDTO> {
     return this.http.delete<ResponseDTO>(`${this.apiUrl}/${id}`);
   }
-
 }
