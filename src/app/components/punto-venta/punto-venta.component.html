@@ -1,4 +1,3 @@
-
 <div class="pos-container">
 
   <!-- ENCABEZADO -->
@@ -56,6 +55,11 @@
       <p>
         Cliente:
         <strong>{{ nombreClienteVenta }}</strong>
+      </p>
+
+      <p>
+        Atendió:
+        <strong>{{ usuarioUltimaVenta }}</strong>
       </p>
 
       <p>
@@ -167,22 +171,14 @@
         </button>
       </div>
 
-      <!-- USUARIO -->
+      <!-- USUARIO (sesión actual, solo lectura) -->
       <div class="form-group">
-        <label>Usuario que realiza la venta *</label>
+        <label>Usuario que realiza la venta</label>
 
-        <select
-          name="idUsuario"
-          [(ngModel)]="idUsuario">
-
-          <option [ngValue]="null">Seleccionar usuario</option>
-
-          <option
-            *ngFor="let usuario of usuarios"
-            [ngValue]="usuario.idUsuario">
-            {{ usuario.nombre }}
-          </option>
-        </select>
+        <div class="user-readonly">
+          <i class="bi bi-person-circle"></i>
+          <span>{{ nombreUsuarioLogueado }}</span>
+        </div>
       </div>
 
       <!-- CLIENTE -->
@@ -388,7 +384,7 @@
       </button>
 
       <p class="required-note">
-        * Selecciona un usuario y agrega productos para finalizar.
+        * Agrega productos para finalizar la venta.
       </p>
 
     </section>

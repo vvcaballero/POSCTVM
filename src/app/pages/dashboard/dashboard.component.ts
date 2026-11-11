@@ -3,6 +3,45 @@ import { CommonModule } from '@angular/common';
 
 import { ReportesService } from '../../services/reportes/reportes.service';
 
+interface VentaReciente {
+  id?: number;
+  fecha?: any;
+  fechaVenta?: any;
+  fechaCreacion?: any;
+  fechaRegistro?: any;
+  fechaHora?: any;
+  createdAt?: any;
+  total: number;
+  estado: string;
+}
+
+interface ProductoStockBajo {
+  id?: number;
+  nombre: string;
+  stock: number;
+}
+
+interface ProductoMasVendido {
+  id?: number;
+  nombre: string;
+  cantidadVendida?: number;
+  cantidad?: number;
+}
+
+interface MovimientoReciente {
+  id?: number;
+  producto?: string;
+  nombre?: string;
+  tipo: string;
+  cantidad: number;
+  fecha?: any;
+  fechaMovimiento?: any;
+  fechaCreacion?: any;
+  fechaRegistro?: any;
+  fechaHora?: any;
+  createdAt?: any;
+}
+
 interface DashboardData {
   ventasDelDia: {
     cantidadVentas: number;
@@ -12,10 +51,10 @@ interface DashboardData {
   productosRegistrados: number;
   ventasRealizadas: number;
 
-  productosStockBajo: any[];
-  ultimasVentas: any[];
-  productosMasVendidos: any[];
-  movimientosRecientes: any[];
+  productosStockBajo: ProductoStockBajo[];
+  ultimasVentas: VentaReciente[];
+  productosMasVendidos: ProductoMasVendido[];
+  movimientosRecientes: MovimientoReciente[];
 }
 
 @Component({
@@ -30,18 +69,7 @@ export class DashboardComponent implements OnInit {
   cargando = false;
   error = '';
 
-  dashboard: DashboardData = {
-    ventasDelDia: {
-      cantidadVentas: 0,
-      totalVentas: 0
-    },
-    productosRegistrados: 0,
-    ventasRealizadas: 0,
-    productosStockBajo: [],
-    ultimasVentas: [],
-    productosMasVendidos: [],
-    movimientosRecientes: []
-  };
+  dashboard: DashboardData = this.crearDashboardVacio();
 
   constructor(
     private reportesService: ReportesService
@@ -49,6 +77,21 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.cargarDashboard();
+  }
+
+  private crearDashboardVacio(): DashboardData {
+    return {
+      ventasDelDia: {
+        cantidadVentas: 0,
+        totalVentas: 0
+      },
+      productosRegistrados: 0,
+      ventasRealizadas: 0,
+      productosStockBajo: [],
+      ultimasVentas: [],
+      productosMasVendidos: [],
+      movimientosRecientes: []
+    };
   }
 
   cargarDashboard(): void {
@@ -64,35 +107,34 @@ export class DashboardComponent implements OnInit {
 
           const data = response.body;
 
+          // Ayuda para depurar: muestra en consola cómo llega un registro
+          console.log('Ejemplo de venta:', data.ultimasVentas?.[0]);
+          console.log('Ejemplo de movimiento:', data.movimientosRecientes?.[0]);
+
           this.dashboard = {
             ventasDelDia: {
-              cantidadVentas: Number(
-                data.ventasDelDia?.cantidadVentas ?? 0
-              ),
-              totalVentas: Number(
-                data.ventasDelDia?.totalVentas ?? 0
-              )
+              cantidadVentas: Number(data.ventasDelDia?.cantidadVentas ?? 0),
+              totalVentas: Number(data.ventasDelDia?.totalVentas ?? 0)
             },
 
-            productosRegistrados: Number(
-              data.productosRegistrados ?? 0
-            ),
+            productosRegistrados: Number(data.productosRegistrados ?? 0),
+            ventasRealizadas: Number(data.ventasRealizadas ?? 0),
 
-            ventasRealizadas: Number(
-              data.ventasRealizadas ?? 0
-            ),
+            productosStockBajo: Array.isArray(data.productosStockBajo)
+              ? data.productosStockBajo
+              : [],
 
-            productosStockBajo:
-              data.productosStockBajo ?? [],
+            ultimasVentas: Array.isArray(data.ultimasVentas)
+              ? data.ultimasVentas
+              : [],
 
-            ultimasVentas:
-              data.ultimasVentas ?? [],
+            productosMasVendidos: Array.isArray(data.productosMasVendidos)
+              ? data.productosMasVendidos
+              : [],
 
-            productosMasVendidos:
-              data.productosMasVendidos ?? [],
-
-            movimientosRecientes:
-              data.movimientosRecientes ?? []
+            movimientosRecientes: Array.isArray(data.movimientosRecientes)
+              ? data.movimientosRecientes
+              : []
           };
 
         } else {
@@ -128,20 +170,48 @@ export class DashboardComponent implements OnInit {
     return this.dashboard.ventasDelDia.cantidadVentas;
   }
 
-  formatearMoneda(valor: number): string {
+  formatearMoneda(valor: number | string | null | undefined): string {
     return Number(valor || 0).toLocaleString('es-MX', {
       style: 'currency',
       currency: 'MXN'
     });
   }
 
-  formatearFecha(fecha: string): string {
+  // Busca la fecha en los nombres de campo más comunes
+  obtenerFechaItem(item: any): any {
+    return (
+      item?.fecha ??
+      item?.fechaVenta ??
+      item?.fechaMovimiento ??
+      item?.fechaCreacion ??
+      item?.fechaRegistro ??
+      item?.fechaHora ??
+      item?.createdAt ??
+      null
+    );
+  }
+
+  formatearFecha(fecha: any): string {
 
     if (!fecha) {
       return 'Sin fecha';
     }
 
-    return new Date(fecha).toLocaleString('es-MX', {
+    let date: Date;
+
+    // Jackson puede enviar LocalDateTime como arreglo: [año, mes, día, hora, min, seg]
+    if (Array.isArray(fecha)) {
+      const [anio, mes, dia, hora = 0, minuto = 0, segundo = 0] = fecha;
+      date = new Date(anio, mes - 1, dia, hora, minuto, segundo);
+    } else {
+      date = new Date(fecha);
+    }
+
+    if (isNaN(date.getTime())) {
+      return 'Fecha inválida';
+    }
+
+    return date.toLocaleString('es-MX', {
       day: '2-digit',
       month: 'short',
       year: 'numeric',
@@ -185,6 +255,19 @@ export class DashboardComponent implements OnInit {
     };
 
     return nombres[tipo] || tipo;
+  }
+
+  obtenerIconoMovimiento(tipo: string): string {
+
+    if (tipo === 'ENTRADA') {
+      return 'bi-arrow-down-circle';
+    }
+
+    if (tipo === 'SALIDA') {
+      return 'bi-arrow-up-circle';
+    }
+
+    return 'bi-arrow-repeat';
   }
 
 }

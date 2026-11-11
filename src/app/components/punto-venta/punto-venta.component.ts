@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -6,14 +5,13 @@ import { forkJoin } from 'rxjs';
 
 import { Producto } from '../../interfaces/productos';
 import { Clientes } from '../../interfaces/clientes';
-import { Usuario } from '../../interfaces/usuarios';
 import { VentaRequest, VentaCompleta } from '../../interfaces/ventas';
 import { PagoRequest } from '../../interfaces/pagos';
 
 import { ProductosService } from '../../services/productos/productos.service';
 import { ClientesService } from '../../services/clientes/clientes.service';
-import { UsuariosService } from '../../services/usuarios/usuarios.service';
 import { VentasService } from '../../services/ventas/ventas.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 interface ProductoCarrito {
   producto: Producto;
@@ -31,13 +29,11 @@ export class PuntoVentaComponent implements OnInit {
 
   productos: Producto[] = [];
   clientes: Clientes[] = [];
-  usuarios: Usuario[] = [];
 
   carrito: ProductoCarrito[] = [];
 
   busqueda = '';
   idCliente: number | null = null;
-  idUsuario: number | null = null;
 
   descuento = 0;
 
@@ -52,15 +48,39 @@ export class PuntoVentaComponent implements OnInit {
 
   ultimaVenta: VentaCompleta | null = null;
 
+  // Nombre del usuario que hizo la última venta (se guarda al registrarla)
+  usuarioUltimaVenta = '';
+
   constructor(
     private productosService: ProductosService,
     private clientesService: ClientesService,
-    private usuariosService: UsuariosService,
-    private ventasService: VentasService
+    private ventasService: VentasService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.cargarDatos();
+  }
+
+  // USUARIO LOGUEADO (desde la sesión)
+  get idUsuario(): number | null {
+    const usuario: any = this.authService.getUsuarioActual();
+
+    const id = usuario?.idUsuario ?? usuario?.id ?? null;
+
+    return id !== null && id !== undefined ? Number(id) : null;
+  }
+
+  get nombreUsuarioLogueado(): string {
+    const usuario: any = this.authService.getUsuarioActual();
+
+    return (
+      usuario?.nombre ??
+      usuario?.nombreUsuario ??
+      usuario?.username ??
+      usuario?.usuario ??
+      'Usuario'
+    );
   }
 
   // CARGAR CATÁLOGOS
@@ -69,8 +89,7 @@ export class PuntoVentaComponent implements OnInit {
 
     forkJoin({
       productos: this.productosService.getProductos(),
-      clientes: this.clientesService.getClientes(),
-      usuarios: this.usuariosService.getUsuarios()
+      clientes: this.clientesService.getClientes()
     }).subscribe({
       next: (response) => {
         this.productos = Array.isArray(response.productos.body)
@@ -80,21 +99,6 @@ export class PuntoVentaComponent implements OnInit {
         this.clientes = Array.isArray(response.clientes.body)
           ? response.clientes.body as Clientes[]
           : [];
-
-        const listaUsuarios = Array.isArray(response.usuarios.body)
-          ? response.usuarios.body as Usuario[]
-          : [];
-
-        this.usuarios = listaUsuarios.filter(
-          usuario => usuario.activo !== false
-        );
-
-        if (
-          !this.idUsuario &&
-          this.usuarios.length === 1
-        ) {
-          this.idUsuario = this.usuarios[0].idUsuario ?? null;
-        }
 
         this.cargando = false;
       },
@@ -263,9 +267,11 @@ export class PuntoVentaComponent implements OnInit {
       return;
     }
 
-    if (!this.idUsuario) {
+    const idUsuario = this.idUsuario;
+
+    if (!idUsuario) {
       this.mostrarMensaje(
-        'Selecciona el usuario que realiza la venta.',
+        'No se pudo identificar al usuario de la sesión. Vuelve a iniciar sesión.',
         'error'
       );
       return;
@@ -337,7 +343,7 @@ export class PuntoVentaComponent implements OnInit {
 
     const venta: VentaRequest = {
       idCliente: this.idCliente,
-      idUsuario: this.idUsuario,
+      idUsuario: idUsuario,
       descuento: this.descuentoValido,
       detalles: this.carrito.map(item => ({
         idProducto: item.producto.idProducto!,
@@ -368,6 +374,7 @@ export class PuntoVentaComponent implements OnInit {
         }
 
         this.ultimaVenta = body as VentaCompleta;
+        this.usuarioUltimaVenta = this.nombreUsuarioLogueado;
 
         this.mostrarMensaje(
           response.mensaje || 'Venta registrada correctamente.',

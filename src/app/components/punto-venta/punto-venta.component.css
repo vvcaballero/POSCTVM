@@ -724,4 +724,27 @@
   .btn-new-sale {
     width: 100%;
   }
+
+  .user-readonly {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: 41px;
+  padding: 0 11px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.user-readonly i {
+  color: #2563eb;
+  font-size: 17px;
+}
+
+
+
+
 }

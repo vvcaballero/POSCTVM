@@ -7,7 +7,7 @@ import { Categorias } from '../../interfaces/categorias';
 
 export interface ResponseDTO {
   mensaje: string;
-  body: Categorias[] | Categorias | any;
+  body: Categorias[] | Categorias | null;
 }
 
 @Injectable({
@@ -19,22 +19,18 @@ export class CategoriasService {
 
   constructor(private http: HttpClient) {}
 
-  // LISTAR CATEGORÍAS
   getCategorias(): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/all`);
   }
 
-  // BUSCAR POR ID
   getCategoria(id: number): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/${id}`);
   }
 
-  // REGISTRAR CATEGORÍA
   crearCategoria(categoria: Categorias): Observable<ResponseDTO> {
     return this.http.post<ResponseDTO>(this.apiUrl, categoria);
   }
 
-  // ACTUALIZAR CATEGORÍA
   actualizarCategoria(
     id: number,
     categoria: Categorias
@@ -45,9 +41,7 @@ export class CategoriasService {
     );
   }
 
-  // ELIMINAR CATEGORÍA
   eliminarCategoria(id: number): Observable<ResponseDTO> {
     return this.http.delete<ResponseDTO>(`${this.apiUrl}/${id}`);
   }
-
 }

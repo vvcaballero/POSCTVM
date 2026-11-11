@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
@@ -14,20 +15,19 @@ import {
 export class AuthService {
 
   private apiUrl = 'http://localhost:8080/api/auth';
-
   private storageKey = 'posctvm_usuario';
 
   constructor(private http: HttpClient) {}
 
-  // INICIAR SESIÓN
-  login(datos: LoginRequest): Observable<ResponseDTO<LoginResponse>> {
-
+  login(
+    datos: LoginRequest
+  ): Observable<ResponseDTO<LoginResponse>> {
     return this.http.post<ResponseDTO<LoginResponse>>(
       `${this.apiUrl}/login`,
       datos
     ).pipe(
       tap(response => {
-        if (response.body && response.body.token) {
+        if (response.body) {
           sessionStorage.setItem(
             this.storageKey,
             JSON.stringify(response.body)
@@ -37,9 +37,7 @@ export class AuthService {
     );
   }
 
-  // OBTENER USUARIO AUTENTICADO
   getUsuarioActual(): LoginResponse | null {
-
     const usuario = sessionStorage.getItem(this.storageKey);
 
     if (!usuario) {
@@ -54,17 +52,11 @@ export class AuthService {
     }
   }
 
-  // OBTENER TOKEN
   getToken(): string | null {
-
-    const usuario = this.getUsuarioActual();
-
-    return usuario?.token ?? null;
+    return this.getUsuarioActual()?.token ?? null;
   }
 
-  // CERRAR SESIÓN
   logout(): void {
     sessionStorage.removeItem(this.storageKey);
   }
-
 }

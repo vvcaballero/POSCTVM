@@ -15,6 +15,7 @@ import { VentasService } from '../../services/ventas/ventas.service';
 import { ProductosService } from '../../services/productos/productos.service';
 import { ClientesService } from '../../services/clientes/clientes.service';
 import { UsuariosService } from '../../services/usuarios/usuarios.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-ventas',
@@ -50,7 +51,8 @@ export class VentasComponent implements OnInit {
     private ventasService: VentasService,
     private productosService: ProductosService,
     private clientesService: ClientesService,
-    private usuariosService: UsuariosService
+    private usuariosService: UsuariosService,
+      private authService: AuthService
   ) {}
 
   ngOnInit(): void {
