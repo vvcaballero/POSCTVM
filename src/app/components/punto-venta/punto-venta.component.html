@@ -1,0 +1,394 @@
+<div class="pos-container">
+
+  <!-- ENCABEZADO -->
+  <div class="pos-header">
+    <div>
+      <h1><i class="bi bi-cart3"></i> Punto de Venta</h1>
+      <p>Registra ventas, administra productos y procesa pagos.</p>
+    </div>
+
+    <div class="pos-header-info">
+      <span class="status-dot"></span>
+      Sistema listo
+    </div>
+  </div>
+
+  <!-- MENSAJE -->
+  <div
+    *ngIf="mensaje"
+    class="alert-message"
+    [class.success]="tipoMensaje === 'success'"
+    [class.error]="tipoMensaje === 'error'">
+
+    <i
+      class="bi"
+      [class.bi-check-circle-fill]="tipoMensaje === 'success'"
+      [class.bi-exclamation-circle-fill]="tipoMensaje === 'error'">
+    </i>
+
+    {{ mensaje }}
+
+    <button type="button" (click)="mensaje = ''">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <!-- VENTA REGISTRADA -->
+  <div *ngIf="ultimaVenta" class="sale-success">
+    <div class="success-icon">
+      <i class="bi bi-check-lg"></i>
+    </div>
+
+    <div class="success-content">
+      <h2>¡Venta registrada correctamente!</h2>
+
+      <p>
+        Folio:
+        <strong>#{{ ultimaVenta.venta.idVenta }}</strong>
+      </p>
+
+      <p>
+        Total:
+        <strong>{{ ultimaVenta.venta.total | currency:'MXN':'symbol':'1.2-2' }}</strong>
+      </p>
+
+      <p>
+        Cliente:
+        <strong>{{ nombreClienteVenta }}</strong>
+      </p>
+
+      <p>
+        Atendió:
+        <strong>{{ usuarioUltimaVenta }}</strong>
+      </p>
+
+      <p>
+        Cambio:
+        <strong>{{ ultimaVenta.cambio | currency:'MXN':'symbol':'1.2-2' }}</strong>
+      </p>
+    </div>
+
+    <button type="button" class="btn-new-sale" (click)="ultimaVenta = null">
+      <i class="bi bi-plus-circle"></i>
+      Nueva venta
+    </button>
+  </div>
+
+  <div class="pos-layout">
+
+    <!-- COLUMNA IZQUIERDA: PRODUCTOS -->
+    <section class="products-section">
+
+      <div class="section-heading">
+        <div>
+          <h2>Productos</h2>
+          <p>Busca y agrega productos al carrito.</p>
+        </div>
+
+        <span class="product-count">
+          {{ productosFiltrados.length }} disponibles
+        </span>
+      </div>
+
+      <!-- BUSCADOR -->
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+
+        <input
+          type="text"
+          name="busqueda"
+          [(ngModel)]="busqueda"
+          placeholder="Buscar por nombre o código...">
+
+        <button
+          *ngIf="busqueda"
+          type="button"
+          (click)="busqueda = ''">
+          <i class="bi bi-x-circle"></i>
+        </button>
+      </div>
+
+      <!-- CATÁLOGO -->
+      <div class="products-grid">
+
+        <button
+          type="button"
+          class="product-card"
+          *ngFor="let producto of productosFiltrados"
+          (click)="agregarProducto(producto)">
+
+          <div class="product-icon">
+            <i class="bi bi-box-seam"></i>
+          </div>
+
+          <div class="product-information">
+            <h3>{{ producto.nombre }}</h3>
+            <span class="product-code">{{ producto.codigo }}</span>
+
+            <div class="product-price">
+              {{ producto.precioVenta | currency:'MXN':'symbol':'1.2-2' }}
+            </div>
+
+            <span class="product-stock">
+              Stock: {{ producto.stock }}
+            </span>
+          </div>
+
+          <div class="add-product">
+            <i class="bi bi-plus-lg"></i>
+          </div>
+
+        </button>
+
+        <div
+          class="empty-products"
+          *ngIf="productosFiltrados.length === 0">
+
+          <i class="bi bi-search"></i>
+          <p>No se encontraron productos disponibles.</p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- COLUMNA DERECHA: CARRITO -->
+    <section class="cart-section">
+
+      <div class="cart-heading">
+        <div>
+          <h2><i class="bi bi-basket3"></i> Carrito</h2>
+          <p>{{ cantidadProductos }} producto(s)</p>
+        </div>
+
+        <button
+          type="button"
+          class="btn-clear"
+          *ngIf="carrito.length > 0"
+          (click)="limpiarCarrito()">
+          <i class="bi bi-trash3"></i>
+          Vaciar
+        </button>
+      </div>
+
+      <!-- USUARIO (sesión actual, solo lectura) -->
+      <div class="form-group">
+        <label>Usuario que realiza la venta</label>
+
+        <div class="user-readonly">
+          <i class="bi bi-person-circle"></i>
+          <span>{{ nombreUsuarioLogueado }}</span>
+        </div>
+      </div>
+
+      <!-- CLIENTE -->
+      <div class="form-group">
+        <label>Cliente</label>
+
+        <select
+          name="idCliente"
+          [(ngModel)]="idCliente">
+
+          <option [ngValue]="null">Público general</option>
+
+          <option
+            *ngFor="let cliente of clientes"
+            [ngValue]="cliente.idCliente">
+            {{ cliente.nombre }}
+          </option>
+        </select>
+      </div>
+
+      <!-- PRODUCTOS DEL CARRITO -->
+      <div class="cart-items">
+
+        <div
+          class="cart-item"
+          *ngFor="let item of carrito">
+
+          <div class="cart-item-info">
+            <h4>{{ item.producto.nombre }}</h4>
+
+            <span>
+              {{ item.producto.precioVenta | currency:'MXN':'symbol':'1.2-2' }}
+              c/u
+            </span>
+
+            <small>Disponible: {{ item.producto.stock }}</small>
+          </div>
+
+          <div class="quantity-controls">
+            <button
+              type="button"
+              (click)="disminuirCantidad(item)">
+              <i class="bi bi-dash"></i>
+            </button>
+
+            <span>{{ item.cantidad }}</span>
+
+            <button
+              type="button"
+              (click)="aumentarCantidad(item)">
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+
+          <div class="cart-item-total">
+            {{ (item.producto.precioVenta * item.cantidad) | currency:'MXN':'symbol':'1.2-2' }}
+          </div>
+
+          <button
+            type="button"
+            class="btn-remove"
+            (click)="eliminarProducto(item)"
+            title="Eliminar producto">
+
+            <i class="bi bi-trash"></i>
+          </button>
+
+        </div>
+
+        <div class="empty-cart" *ngIf="carrito.length === 0">
+          <i class="bi bi-cart-x"></i>
+          <h3>Carrito vacío</h3>
+          <p>Selecciona productos para comenzar una venta.</p>
+        </div>
+
+      </div>
+
+      <!-- RESUMEN -->
+      <div class="sale-summary">
+
+        <div class="summary-line">
+          <span>Subtotal</span>
+          <strong>{{ subtotal | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+
+        <div class="discount-field">
+          <label>Descuento ($)</label>
+
+          <input
+            type="number"
+            name="descuento"
+            [(ngModel)]="descuento"
+            min="0"
+            [max]="subtotal"
+            step="0.01"
+            [disabled]="carrito.length === 0">
+        </div>
+
+        <div class="summary-line discount-line">
+          <span>Descuento aplicado</span>
+          <strong>
+            -{{ descuentoValido | currency:'MXN':'symbol':'1.2-2' }}
+          </strong>
+        </div>
+
+        <div class="summary-total">
+          <span>Total a pagar</span>
+          <strong>{{ total | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+
+      </div>
+
+      <!-- PAGO -->
+      <div class="payment-section">
+
+        <h3><i class="bi bi-credit-card"></i> Método de pago</h3>
+
+        <div class="payment-methods">
+
+          <button
+            type="button"
+            [class.selected]="metodoPago === 'EFECTIVO'"
+            (click)="metodoPago = 'EFECTIVO'; cambiarMetodoPago()">
+
+            <i class="bi bi-cash-stack"></i>
+            <span>Efectivo</span>
+          </button>
+
+          <button
+            type="button"
+            [class.selected]="metodoPago === 'TARJETA'"
+            (click)="metodoPago = 'TARJETA'; cambiarMetodoPago()">
+
+            <i class="bi bi-credit-card"></i>
+            <span>Tarjeta</span>
+          </button>
+
+          <button
+            type="button"
+            [class.selected]="metodoPago === 'TRANSFERENCIA'"
+            (click)="metodoPago = 'TRANSFERENCIA'; cambiarMetodoPago()">
+
+            <i class="bi bi-bank"></i>
+            <span>Transferencia</span>
+          </button>
+
+        </div>
+
+        <div class="form-group" *ngIf="metodoPago === 'EFECTIVO'">
+          <label>Importe recibido ($)</label>
+
+          <input
+            type="number"
+            name="montoRecibido"
+            [(ngModel)]="montoRecibido"
+            min="0"
+            step="0.01"
+            placeholder="Cantidad recibida">
+        </div>
+
+        <div
+          class="change-summary"
+          *ngIf="metodoPago === 'EFECTIVO'">
+
+          <span>Cambio a entregar</span>
+
+          <strong>
+            {{ cambio | currency:'MXN':'symbol':'1.2-2' }}
+          </strong>
+
+        </div>
+
+        <div class="payment-note" *ngIf="metodoPago !== 'EFECTIVO'">
+          Se registrará el pago exacto por
+          <strong>{{ total | currency:'MXN':'symbol':'1.2-2' }}</strong>.
+        </div>
+
+      </div>
+
+      <!-- CONFIRMAR -->
+      <button
+        type="button"
+        class="btn-finish-sale"
+        (click)="registrarVenta()"
+        [disabled]="
+          procesandoVenta ||
+          carrito.length === 0 ||
+          !idUsuario ||
+          !pagoValido ||
+          total <= 0
+        ">
+
+        <span *ngIf="!procesandoVenta">
+          <i class="bi bi-check-circle"></i>
+          Finalizar venta
+        </span>
+
+        <span *ngIf="procesandoVenta">
+          <i class="bi bi-arrow-repeat spinning"></i>
+          Procesando venta...
+        </span>
+
+      </button>
+
+      <p class="required-note">
+        * Agrega productos para finalizar la venta.
+      </p>
+
+    </section>
+
+  </div>
+
+</div>

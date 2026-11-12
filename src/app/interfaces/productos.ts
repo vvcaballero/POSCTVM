@@ -1,6 +1,7 @@
-export interface Producto {
 
-  idProducto: number;
+export interface Producto {
+  
+  idProducto?: number;
   codigo: string;
   nombre: string;
   descripcion: string;
@@ -10,5 +11,4 @@ export interface Producto {
   stock: number;
   stockMinimo: number;
   activo: boolean;
-
 }

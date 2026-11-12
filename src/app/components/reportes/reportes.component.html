@@ -1,0 +1,438 @@
+<div class="reportes-container">
+
+  <!-- ENCABEZADO -->
+  <div class="page-header">
+
+    <div>
+      <h2>Reportes</h2>
+      <p>Consulta y analiza el rendimiento de tu negocio.</p>
+    </div>
+
+    <div class="header-icon">
+      <i class="bi bi-bar-chart-line"></i>
+    </div>
+
+  </div>
+
+  <!-- FILTROS -->
+  <section class="filter-card">
+
+    <div class="filter-title">
+      <i class="bi bi-funnel"></i>
+      <h5>Filtrar reportes</h5>
+    </div>
+
+    <div class="filter-content">
+
+      <div class="filter-field">
+        <label for="desde">Fecha inicial</label>
+
+        <input
+          id="desde"
+          type="date"
+          class="form-control"
+          [(ngModel)]="desde"
+        >
+      </div>
+
+      <div class="filter-field">
+        <label for="hasta">Fecha final</label>
+
+        <input
+          id="hasta"
+          type="date"
+          class="form-control"
+          [(ngModel)]="hasta"
+        >
+      </div>
+
+      <div class="filter-actions">
+
+        <button
+          class="btn btn-primary"
+          (click)="cargarReportes()"
+          [disabled]="cargando"
+        >
+          <i class="bi bi-search"></i>
+          Consultar
+        </button>
+
+        <button
+          class="btn btn-light"
+          (click)="restablecerFechas()"
+          [disabled]="cargando"
+        >
+          <i class="bi bi-arrow-counterclockwise"></i>
+          Restablecer
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- ERROR -->
+  <div class="alert alert-warning" *ngIf="error">
+    <i class="bi bi-exclamation-triangle"></i>
+    {{ error }}
+  </div>
+
+  <!-- CARGANDO -->
+  <div class="loading-container" *ngIf="cargando">
+
+    <div class="spinner-border text-primary"></div>
+
+    <p>Generando reportes...</p>
+
+  </div>
+
+  <ng-container *ngIf="!cargando">
+
+    <!-- RESUMEN FINANCIERO -->
+    <section class="section-container">
+
+      <div class="section-header">
+        <div>
+          <h4>Resumen financiero</h4>
+          <p>Resultados del período seleccionado.</p>
+        </div>
+      </div>
+
+      <div class="summary-grid">
+
+        <div class="summary-card">
+
+          <div class="summary-icon blue">
+            <i class="bi bi-receipt"></i>
+          </div>
+
+          <div>
+            <span>Total de ventas</span>
+            <h3>{{ resumen.cantidadVentas }}</h3>
+            <small>Ventas pagadas</small>
+          </div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-icon purple">
+            <i class="bi bi-cash-stack"></i>
+          </div>
+
+          <div>
+            <span>Subtotal</span>
+            <h3>{{ resumen.subtotal | currency:'MXN':'symbol-narrow':'1.2-2' }}</h3>
+            <small>Antes de descuentos</small>
+          </div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-icon orange">
+            <i class="bi bi-tags"></i>
+          </div>
+
+          <div>
+            <span>Descuentos</span>
+            <h3>{{ resumen.descuentos | currency:'MXN':'symbol-narrow':'1.2-2' }}</h3>
+            <small>Descuentos aplicados</small>
+          </div>
+
+        </div>
+
+        <div class="summary-card">
+
+          <div class="summary-icon green">
+            <i class="bi bi-wallet2"></i>
+          </div>
+
+          <div>
+            <span>Total vendido</span>
+            <h3>{{ resumen.totalVentas | currency:'MXN':'symbol-narrow':'1.2-2' }}</h3>
+            <small>Ingresos de ventas pagadas</small>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- VENTAS DIARIAS -->
+    <section class="section-container">
+
+      <div class="section-header">
+        <div>
+          <h4>Ventas por día</h4>
+          <p>Comportamiento de las ventas durante el período.</p>
+        </div>
+      </div>
+
+      <div class="chart-card">
+
+        <div class="empty-state" *ngIf="ventasDiarias.length === 0">
+          <i class="bi bi-bar-chart"></i>
+          <p>No hay ventas registradas en este período.</p>
+        </div>
+
+        <div class="chart-area" *ngIf="ventasDiarias.length > 0">
+
+          <div
+            class="chart-column"
+            *ngFor="let venta of ventasDiarias; trackBy: trackByFecha"
+          >
+
+            <span class="chart-value">
+              {{ venta.totalVentas | currency:'MXN':'symbol-narrow':'1.0-0' }}
+            </span>
+
+            <div class="bar-container">
+
+              <div
+                class="chart-bar"
+                [style.height.%]="obtenerAlturaBarra(venta.totalVentas)"
+                [title]="venta.totalVentas | currency:'MXN':'symbol-narrow':'1.2-2'"
+              ></div>
+
+            </div>
+
+            <span class="chart-label">
+              {{ formatearFechaGrafica(venta.fecha) }}
+            </span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- DOS COLUMNAS -->
+    <div class="reports-grid">
+
+      <!-- VENTAS POR USUARIO -->
+      <section class="section-container">
+
+        <div class="section-header">
+          <div>
+            <h4>Ventas por usuario</h4>
+            <p>Rendimiento de cada usuario.</p>
+          </div>
+          <i class="bi bi-person-badge section-icon"></i>
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table report-table">
+
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Ventas</th>
+                <th>Total vendido</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let usuario of ventasUsuarios; trackBy: trackByUsuario">
+
+                <td>
+                  <strong>{{ usuario.nombreUsuario || 'Sin usuario' }}</strong>
+                </td>
+
+                <td>{{ usuario.cantidadVentas }}</td>
+
+                <td class="amount">
+                  {{ usuario.totalVentas | currency:'MXN':'symbol-narrow':'1.2-2' }}
+                </td>
+
+              </tr>
+
+              <tr *ngIf="ventasUsuarios.length === 0">
+                <td colspan="3" class="empty-table">
+                  No hay ventas por usuario.
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+      <!-- VENTAS POR CLIENTE -->
+      <section class="section-container">
+
+        <div class="section-header">
+          <div>
+            <h4>Ventas por cliente</h4>
+            <p>Clientes con compras en el período.</p>
+          </div>
+          <i class="bi bi-people section-icon"></i>
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table report-table">
+
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Compras</th>
+                <th>Total comprado</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr *ngFor="let cliente of ventasClientes; trackBy: trackByCliente">
+
+                <td>
+                  <strong>{{ cliente.nombreCliente || 'Cliente' }}</strong>
+                </td>
+
+                <td>{{ cliente.cantidadCompras }}</td>
+
+                <td class="amount">
+                  {{ cliente.totalComprado | currency:'MXN':'symbol-narrow':'1.2-2' }}
+                </td>
+
+              </tr>
+
+              <tr *ngIf="ventasClientes.length === 0">
+                <td colspan="3" class="empty-table">
+                  No hay compras de clientes registradas.
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </div>
+
+    <!-- SEGUNDA FILA -->
+    <div class="reports-grid">
+
+      <!-- MÉTODOS DE PAGO -->
+      <section class="section-container">
+
+        <div class="section-header">
+          <div>
+            <h4>Métodos de pago</h4>
+            <p>Distribución de ingresos por forma de pago.</p>
+          </div>
+          <i class="bi bi-credit-card section-icon"></i>
+        </div>
+
+        <div class="payment-list">
+
+          <div
+            class="payment-item"
+            *ngFor="let pago of metodosPago"
+          >
+
+            <div class="payment-info">
+
+              <div class="payment-icon">
+                <i
+                  class="bi"
+                  [ngClass]="{
+                    'bi-cash': pago.metodoPago === 'EFECTIVO',
+                    'bi-credit-card': pago.metodoPago === 'TARJETA',
+                    'bi-bank': pago.metodoPago === 'TRANSFERENCIA'
+                  }"
+                ></i>
+              </div>
+
+              <div>
+                <strong>{{ nombreMetodoPago(pago.metodoPago) }}</strong>
+                <small>{{ pago.cantidadPagos }} pagos</small>
+              </div>
+
+            </div>
+
+            <strong class="amount">
+              {{ pago.total | currency:'MXN':'symbol-narrow':'1.2-2' }}
+            </strong>
+
+          </div>
+
+          <div class="empty-state" *ngIf="metodosPago.length === 0">
+            <p>No hay pagos registrados.</p>
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- PRODUCTOS MÁS VENDIDOS -->
+      <section class="section-container">
+
+        <div class="section-header">
+          <div>
+            <h4>Productos más vendidos</h4>
+            <p>Los cinco productos con más movimiento.</p>
+          </div>
+          <i class="bi bi-box-seam section-icon"></i>
+        </div>
+
+        <div class="table-responsive">
+
+          <table class="table report-table">
+
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Unidades vendidas</th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+              <tr
+                *ngFor="let producto of productosMasVendidos; trackBy: trackByProducto"
+              >
+
+                <td>
+                  <strong>{{ producto.nombre }}</strong>
+                </td>
+
+                <td>
+                  <span class="quantity-badge">
+                    {{ producto.unidadesVendidas }}
+                  </span>
+                </td>
+
+              </tr>
+
+              <tr *ngIf="productosMasVendidos.length === 0">
+                <td colspan="2" class="empty-table">
+                  No hay productos vendidos en este período.
+                </td>
+              </tr>
+
+            </tbody>
+
+          </table>
+
+        </div>
+
+      </section>
+
+    </div>
+
+  </ng-container>
+
+</div>

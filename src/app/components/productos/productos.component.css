@@ -1,0 +1,18 @@
+.card {
+  border: none;
+  border-radius: 10px;
+}
+
+.table th,
+.table td {
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.form-label {
+  font-weight: 600;
+}
+
+textarea {
+  resize: vertical;
+}
