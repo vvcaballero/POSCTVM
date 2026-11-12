@@ -1,12 +1,12 @@
-
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Producto } from '../../interfaces/productos';
+import { Producto } from '../../interfaces/productos.interface';
+
 
 export interface ResponseDTO {
   mensaje: string;
-  body: Producto[] | Producto | null;
+  body: Producto[];
 }
 
 @Injectable({
@@ -20,27 +20,5 @@ export class ProductosService {
 
   getProductos(): Observable<ResponseDTO> {
     return this.http.get<ResponseDTO>(`${this.apiUrl}/all`);
-  }
-
-  getProducto(id: number): Observable<ResponseDTO> {
-    return this.http.get<ResponseDTO>(`${this.apiUrl}/${id}`);
-  }
-
-  crearProducto(producto: Producto): Observable<ResponseDTO> {
-    return this.http.post<ResponseDTO>(this.apiUrl, producto);
-  }
-
-  actualizarProducto(
-    id: number,
-    producto: Producto
-  ): Observable<ResponseDTO> {
-    return this.http.put<ResponseDTO>(
-      `${this.apiUrl}/${id}`,
-      producto
-    );
-  }
-
-  eliminarProducto(id: number): Observable<ResponseDTO> {
-    return this.http.delete<ResponseDTO>(`${this.apiUrl}/${id}`);
   }
 }

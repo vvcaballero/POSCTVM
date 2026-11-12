@@ -1,46 +1,15 @@
-
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Usuario } from '../../interfaces/usuarios';
+import { Usuario } from '../../interfaces/usuarios.interface';
 
-export interface ResponseDTO {
-  mensaje: string;
-  body: any;
-}
-
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class UsuariosService {
-
-  private apiUrl = 'http://localhost:8080/api/usuarios';
+  private apiUrl = 'http://localhost:8080/usuario/all';
 
   constructor(private http: HttpClient) {}
 
-  getUsuarios(): Observable<ResponseDTO> {
-    return this.http.get<ResponseDTO>(`${this.apiUrl}/all`);
-  }
-
-  getUsuario(id: number): Observable<ResponseDTO> {
-    return this.http.get<ResponseDTO>(`${this.apiUrl}/${id}`);
-  }
-
-  crearUsuario(usuario: Usuario): Observable<ResponseDTO> {
-    return this.http.post<ResponseDTO>(this.apiUrl, usuario);
-  }
-
-  actualizarUsuario(
-    id: number,
-    usuario: Usuario
-  ): Observable<ResponseDTO> {
-    return this.http.put<ResponseDTO>(
-      `${this.apiUrl}/${id}`,
-      usuario
-    );
-  }
-
-  eliminarUsuario(id: number): Observable<ResponseDTO> {
-    return this.http.delete<ResponseDTO>(`${this.apiUrl}/${id}`);
+  getUsuarios(): Observable<Usuario[]> {
+    return this.http.get<Usuario[]>(this.apiUrl);
   }
 }
