@@ -14,7 +14,9 @@ export interface ResponseDTO {
 })
 export class UsuariosService {
 
-  private apiUrl = 'http://localhost:8080/api/usuarios';
+ // private apiUrl = 'http://localhost:8080/api/usuarios';
+    private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api';
+
 
   constructor(private http: HttpClient) {}
 
