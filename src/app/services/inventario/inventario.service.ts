@@ -16,7 +16,7 @@ export interface ResponseDTO {
 export class InventarioService {
 
   //private apiUrl = 'http://localhost:8080/api/inventario';
-    private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api';
+    private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api/inventario';
 
 
   constructor(private http: HttpClient) {}
