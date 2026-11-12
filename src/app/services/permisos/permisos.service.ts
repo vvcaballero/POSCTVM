@@ -9,11 +9,9 @@ import { PermisoRol } from '../../interfaces/permiso-rol.interface';
 })
 export class PermisosService {
 
-  // DESARROLLO
-  private apiUrl = 'http://localhost:8080/api/permisos-rol';
-
-  // PRODUCCIÓN
-  // private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api/permisos-rol';
+ 
+  // private apiUrl = 'http://localhost:8080/api/permisos-rol';
+   private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api/permisos-rol';
 
   private permisosCache: { [rol: string]: PermisoRol } = {};
 
