@@ -23,6 +23,7 @@
        routerLinkActive="active"
        [routerLinkActiveOptions]="{ exact: true }"
        class="menu-item">
+
       <i class="bi bi-speedometer2"></i>
       <span>Dashboard</span>
     </a>
@@ -30,89 +31,52 @@
     <!-- PRODUCTOS -->
     <a routerLink="/productos"
        routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
        class="menu-item">
+
       <i class="bi bi-box-seam"></i>
       <span>Productos</span>
-    </a>
-
-    <!-- CATEGORÍAS -->
-    <a routerLink="/categorias"
-       routerLinkActive="active"
-       class="menu-item">
-      <i class="bi bi-tags"></i>
-      <span>Categorías</span>
     </a>
 
     <!-- USUARIOS -->
     <a routerLink="/usuarios"
        routerLinkActive="active"
+       [routerLinkActiveOptions]="{ exact: true }"
        class="menu-item">
+
       <i class="bi bi-people"></i>
       <span>Usuarios</span>
     </a>
 
-    <!-- CLIENTES -->
-    <a routerLink="/clientes"
-       routerLinkActive="active"
-       class="menu-item">
-      <i class="bi bi-person-vcard"></i>
-      <span>Clientes</span>
-    </a>
-
     <p class="menu-title">OPERACIONES</p>
 
-    <!-- PUNTO DE VENTA -->
-    <a routerLink="/punto-venta"
-       routerLinkActive="active"
-       class="menu-item">
-      <i class="bi bi-cart-plus"></i>
-      <span>Punto de venta</span>
-    </a>
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-cart3"></i>
+      <span>Ventas</span>
+      <span class="coming-soon">Próximamente</span>
+    </div>
 
-    <!-- HISTORIAL DE VENTAS -->
-    <a routerLink="/ventas"
-       routerLinkActive="active"
-       class="menu-item">
-      <i class="bi bi-receipt"></i>
-      <span>Historial de ventas</span>
-    </a>
-
-    <!-- INVENTARIO -->
-    <a routerLink="/inventario"
-       routerLinkActive="active"
-       class="menu-item">
+    <div class="menu-item disabled" aria-disabled="true">
       <i class="bi bi-clipboard-data"></i>
       <span>Inventario</span>
-    </a>
+    </div>
+
+    <div class="menu-item disabled" aria-disabled="true">
+      <i class="bi bi-bag-check"></i>
+      <span>Compras</span>
+    </div>
 
     <p class="menu-title">ADMINISTRACIÓN</p>
 
-    <!-- REPORTES -->
-    <a routerLink="/reportes"
-       routerLinkActive="active"
-       class="menu-item">
+    <div class="menu-item disabled" aria-disabled="true">
       <i class="bi bi-bar-chart-line"></i>
       <span>Reportes</span>
-    </a>
+    </div>
 
-    <!-- CONFIGURACIÓN -->
-    <a routerLink="/configuracion"
-       routerLinkActive="active"
-       class="menu-item">
+    <div class="menu-item disabled" aria-disabled="true">
       <i class="bi bi-gear"></i>
       <span>Configuración</span>
-    </a>
-
-
-    <a
-      routerLink="/pedidos-clientes"
-      routerLinkActive="active"
-      class="menu-item">
-      <i class="bi bi-clipboard-check"></i>
-      <span>Pedidos de clientes</span>
-    </a>
-
-
+    </div>
 
   </div>
 

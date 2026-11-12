@@ -1,163 +1,8 @@
-<main class="container-fluid py-4">
+<main class="container py-4">
 
-  <!-- ENCABEZADO -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <h2 class="mb-4">Lista de productos</h2>
 
-    <div>
-      <h2 class="fw-bold mb-1">Productos</h2>
-      <p class="text-muted mb-0">Administración del catálogo de productos</p>
-    </div>
-
-    <button class="btn btn-primary"
-            type="button"
-            (click)="nuevoProducto()">
-      <i class="bi bi-plus-circle me-2"></i>
-      Nuevo producto
-    </button>
-
-  </div>
-
-  <!-- FORMULARIO -->
-  @if (mostrarFormulario()) {
-
-    <div class="card shadow-sm mb-4">
-
-      <div class="card-header bg-dark text-white">
-        {{ editando() ? 'Editar producto' : 'Registrar producto' }}
-      </div>
-
-      <div class="card-body">
-
-        <form (ngSubmit)="guardarProducto()">
-
-          <div class="row g-3">
-
-            <div class="col-md-4">
-              <label class="form-label">Código *</label>
-              <input type="text"
-                     class="form-control"
-                     name="codigo"
-                     [(ngModel)]="producto.codigo"
-                     required>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Nombre *</label>
-              <input type="text"
-                     class="form-control"
-                     name="nombre"
-                     [(ngModel)]="producto.nombre"
-                     required>
-            </div>
-
-            <div class="col-md-4">
-              <label class="form-label">Categoría *</label>
-              <select class="form-select"
-                      name="idCategoria"
-                      [(ngModel)]="producto.idCategoria"
-                      required>
-                <option [ngValue]="0">Seleccionar categoría</option>
-
-                @for (categoria of categorias(); track categoria.idCategoria) {
-                  <option [ngValue]="categoria.idCategoria">
-                    {{ categoria.nombre }}
-                  </option>
-                }
-
-              </select>
-            </div>
-
-            <div class="col-md-12">
-              <label class="form-label">Descripción</label>
-              <textarea class="form-control"
-                        name="descripcion"
-                        rows="2"
-                        [(ngModel)]="producto.descripcion">
-              </textarea>
-            </div>
-
-            <div class="col-md-3">
-              <label class="form-label">Precio de compra *</label>
-              <input type="number"
-                     class="form-control"
-                     name="precioCompra"
-                     min="0"
-                     step="0.01"
-                     [(ngModel)]="producto.precioCompra"
-                     required>
-            </div>
-
-            <div class="col-md-3">
-              <label class="form-label">Precio de venta *</label>
-              <input type="number"
-                     class="form-control"
-                     name="precioVenta"
-                     min="0"
-                     step="0.01"
-                     [(ngModel)]="producto.precioVenta"
-                     required>
-            </div>
-
-            <div class="col-md-3">
-              <label class="form-label">Stock *</label>
-              <input type="number"
-                     class="form-control"
-                     name="stock"
-                     min="0"
-                     [(ngModel)]="producto.stock"
-                     required>
-            </div>
-
-            <div class="col-md-3">
-              <label class="form-label">Stock mínimo *</label>
-              <input type="number"
-                     class="form-control"
-                     name="stockMinimo"
-                     min="0"
-                     [(ngModel)]="producto.stockMinimo"
-                     required>
-            </div>
-
-            <div class="col-md-3">
-              <label class="form-label">Estado</label>
-              <select class="form-select"
-                      name="activo"
-                      [(ngModel)]="producto.activo">
-                <option [ngValue]="true">Activo</option>
-                <option [ngValue]="false">Inactivo</option>
-              </select>
-            </div>
-
-          </div>
-
-          <div class="mt-4 d-flex gap-2">
-
-            <button type="submit" class="btn btn-success">
-              <i class="bi bi-save me-2"></i>
-              {{ editando() ? 'Actualizar' : 'Guardar' }}
-            </button>
-
-            <button type="button"
-                    class="btn btn-secondary"
-                    (click)="cancelarFormulario()">
-              Cancelar
-            </button>
-
-          </div>
-
-        </form>
-
-      </div>
-    </div>
-
-  }
-
-  <!-- TABLA -->
   <div class="card shadow-sm">
-
-    <div class="card-header bg-white py-3">
-      <h5 class="mb-0">Lista de productos</h5>
-    </div>
 
     <div class="table-responsive">
 
@@ -170,12 +15,11 @@
             <th>Nombre</th>
             <th>Descripción</th>
             <th>Categoría</th>
-            <th>Precio compra</th>
-            <th>Precio venta</th>
+            <th>Precio Compra</th>
+            <th>Precio Venta</th>
             <th>Stock</th>
-            <th>Stock mínimo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>Stock Mínimo</th>
+            <th>Activo</th>
           </tr>
         </thead>
 
@@ -184,59 +28,30 @@
           @for (producto of productos(); track producto.idProducto) {
 
             <tr>
-
               <td>{{ producto.idProducto }}</td>
               <td>{{ producto.codigo }}</td>
               <td>{{ producto.nombre }}</td>
               <td>{{ producto.descripcion }}</td>
-
-              <td>
-                {{ obtenerNombreCategoria(producto.idCategoria) }}
-              </td>
-
+              <td>{{ producto.idCategoria }}</td>
               <td>{{ producto.precioCompra | currency:'MXN' }}</td>
               <td>{{ producto.precioVenta | currency:'MXN' }}</td>
               <td>{{ producto.stock }}</td>
               <td>{{ producto.stockMinimo }}</td>
 
               <td>
-                @if (producto.activo) {
-                  <span class="badge bg-success">Activo</span>
-                } @else {
-                  <span class="badge bg-secondary">Inactivo</span>
-                }
-              </td>
-
-              <td>
-                <div class="d-flex gap-2">
-
-                  <button class="btn btn-sm btn-warning"
-                          type="button"
-                          title="Editar"
-                          (click)="editarProducto(producto)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-
-                  <button class="btn btn-sm btn-danger"
-                          type="button"
-                          title="Eliminar"
-                          (click)="eliminarProducto(producto.idProducto!)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-
-                </div>
+                {{ producto.activo ? 'Sí' : 'No' }}
               </td>
 
             </tr>
 
-          } @empty {
+          }
 
+          @empty {
             <tr>
-              <td colspan="11" class="text-center py-4">
+              <td colspan="10" class="text-center py-3">
                 No hay productos registrados.
               </td>
             </tr>
-
           }
 
         </tbody>
@@ -244,6 +59,7 @@
       </table>
 
     </div>
+
   </div>
 
 </main>
