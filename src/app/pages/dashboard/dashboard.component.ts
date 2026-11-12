@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 import { ReportesService } from '../../services/reportes/reportes.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 interface VentaReciente {
   id?: number;
@@ -72,7 +73,8 @@ export class DashboardComponent implements OnInit {
   dashboard: DashboardData = this.crearDashboardVacio();
 
   constructor(
-    private reportesService: ReportesService
+    private reportesService: ReportesService,
+     private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -269,5 +271,9 @@ export class DashboardComponent implements OnInit {
 
     return 'bi-arrow-repeat';
   }
+
+  esAdmin(): boolean {
+  return this.authService.getUsuarioActual()?.rol?.toUpperCase() === 'ADMIN';
+}
 
 }

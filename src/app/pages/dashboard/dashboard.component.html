@@ -30,14 +30,20 @@
     <!-- Resumen -->
     <div class="summary-grid">
 
+        @if (esAdmin()) {
       <div class="summary-card">
-        <div class="summary-icon green"><i class="bi bi-currency-dollar"></i></div>
+        <div class="summary-icon green">
+          <i class="bi bi-currency-dollar"></i>
+        </div>
+
         <div>
           <span>Ventas del día</span>
           <h3>{{ formatearMoneda(totalVentasHoy) }}</h3>
           <small>{{ cantidadVentasHoy }} ventas hoy</small>
         </div>
       </div>
+    }
+
 
       <div class="summary-card">
         <div class="summary-icon blue"><i class="bi bi-box-seam"></i></div>
@@ -71,6 +77,7 @@
     <!-- Ventas y stock bajo -->
     <div class="reports-grid">
 
+        @if (esAdmin()) {
       <div class="section-container">
         <div class="section-header">
           <div>
@@ -89,21 +96,30 @@
                 <th>Estado</th>
               </tr>
             </thead>
+
             <tbody>
               <tr *ngFor="let v of dashboard.ultimasVentas">
-             <td>{{ formatearFecha(obtenerFechaItem(v)) }}</td>
+                <td>{{ formatearFecha(obtenerFechaItem(v)) }}</td>
                 <td class="amount">{{ formatearMoneda(v.total) }}</td>
                 <td>
-                  <span class="status-badge" [ngClass]="obtenerClaseEstado(v.estado)">{{ v.estado }}</span>
+                  <span
+                    class="status-badge"
+                    [ngClass]="obtenerClaseEstado(v.estado)">
+                    {{ v.estado }}
+                  </span>
                 </td>
               </tr>
+
               <tr *ngIf="dashboard.ultimasVentas.length === 0">
-                <td colspan="3" class="empty-table">Aún no hay ventas para mostrar.</td>
+                <td colspan="3" class="empty-table">
+                  Aún no hay ventas para mostrar.
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
+    }
 
       <div class="section-container">
         <div class="section-header">

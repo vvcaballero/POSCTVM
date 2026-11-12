@@ -1,4 +1,5 @@
-import { Component, OnInit, signal } from '@angular/core';
+
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 
@@ -7,6 +8,7 @@ import { Categorias } from '../../interfaces/categorias';
 
 import { ProductosService } from '../../services/productos/productos.service';
 import { CategoriasService } from '../../services/categorias/categorias.service';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-productos',
@@ -20,6 +22,37 @@ export class ProductosComponent implements OnInit {
   productos = signal<Producto[]>([]);
   categorias = signal<Categorias[]>([]);
 
+  busqueda = signal('');
+
+  productosFiltrados = computed(() => {
+    const texto = this.normalizar(this.busqueda());
+
+    if (!texto) {
+      return this.productos();
+    }
+
+    return this.productos().filter(producto => {
+      const categoria = this.obtenerNombreCategoria(producto.idCategoria);
+
+      const valores = [
+        producto.idProducto,
+        producto.codigo,
+        producto.nombre,
+        producto.descripcion,
+        categoria,
+        producto.precioCompra,
+        producto.precioVenta,
+        producto.stock,
+        producto.stockMinimo,
+        producto.activo ? 'activo' : 'inactivo'
+      ];
+
+      return valores.some(valor =>
+        this.normalizar(String(valor ?? '')).includes(texto)
+      );
+    });
+  });
+
   mostrarFormulario = signal(false);
   editando = signal(false);
 
@@ -27,12 +60,21 @@ export class ProductosComponent implements OnInit {
 
   constructor(
     private productosService: ProductosService,
-    private categoriasService: CategoriasService
+    private categoriasService: CategoriasService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.listarProductos();
     this.listarCategorias();
+  }
+
+  private normalizar(valor: string): string {
+    return valor
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .trim();
   }
 
   productoVacio(): Producto {
@@ -51,12 +93,12 @@ export class ProductosComponent implements OnInit {
 
   listarProductos(): void {
     this.productosService.getProductos().subscribe({
-      next: (response) => {
+      next: response => {
         if (response.mensaje === 'OK' && Array.isArray(response.body)) {
           this.productos.set(response.body);
         }
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al obtener productos', err);
       }
     });
@@ -64,12 +106,12 @@ export class ProductosComponent implements OnInit {
 
   listarCategorias(): void {
     this.categoriasService.getCategorias().subscribe({
-      next: (response) => {
+      next: response => {
         if (response.mensaje === 'OK' && Array.isArray(response.body)) {
           this.categorias.set(response.body);
         }
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al obtener categorías', err);
       }
     });
@@ -104,12 +146,12 @@ export class ProductosComponent implements OnInit {
         this.producto.idProducto,
         this.producto
       ).subscribe({
-        next: (response) => {
+        next: response => {
           alert(response.mensaje);
           this.cancelarFormulario();
           this.listarProductos();
         },
-        error: (err) => {
+        error: err => {
           console.error('Error al actualizar producto', err);
           alert('No fue posible actualizar el producto.');
         }
@@ -118,12 +160,12 @@ export class ProductosComponent implements OnInit {
     } else {
 
       this.productosService.crearProducto(this.producto).subscribe({
-        next: (response) => {
+        next: response => {
           alert(response.mensaje);
           this.cancelarFormulario();
           this.listarProductos();
         },
-        error: (err) => {
+        error: err => {
           console.error('Error al registrar producto', err);
           alert('No fue posible registrar el producto.');
         }
@@ -139,11 +181,11 @@ export class ProductosComponent implements OnInit {
     }
 
     this.productosService.eliminarProducto(id).subscribe({
-      next: (response) => {
+      next: response => {
         alert(response.mensaje);
         this.listarProductos();
       },
-      error: (err) => {
+      error: err => {
         console.error('Error al eliminar producto', err);
         alert('No fue posible eliminar el producto.');
       }
@@ -163,4 +205,11 @@ export class ProductosComponent implements OnInit {
 
     return categoria ? categoria.nombre : 'Sin categoría';
   }
+
+
+esAdmin(): boolean {
+  return this.authService.getUsuarioActual()?.rol?.toUpperCase() === 'ADMIN';
+}
+
+  
 }

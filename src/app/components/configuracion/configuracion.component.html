@@ -1,1 +1,208 @@
-<p>configuracion works!</p>
+
+<div class="configuracion-container">
+
+  <!-- ENCABEZADO -->
+  <div class="config-header">
+    <div class="header-icon">
+      <i class="bi bi-shield-lock"></i>
+    </div>
+
+    <div class="header-text">
+      <h2>Configuración de permisos</h2>
+      <p>Administra los accesos y las acciones disponibles para cada rol.</p>
+    </div>
+  </div>
+
+  <!-- MENSAJES -->
+  <div
+    class="custom-alert success-alert"
+    *ngIf="mensaje && tipoMensaje === 'exito'">
+    <i class="bi bi-check-circle-fill"></i>
+    <span>{{ mensaje }}</span>
+  </div>
+
+  <div
+    class="custom-alert error-alert"
+    *ngIf="mensaje && tipoMensaje === 'error'">
+    <i class="bi bi-exclamation-circle-fill"></i>
+    <span>{{ mensaje }}</span>
+  </div>
+
+  <!-- SELECCIÓN DE ROL -->
+  <section class="role-section">
+
+    <div class="section-heading">
+      <div class="section-icon">
+        <i class="bi bi-person-badge"></i>
+      </div>
+
+      <div>
+        <h4>Seleccionar rol</h4>
+        <p>Elige el perfil que deseas configurar.</p>
+      </div>
+    </div>
+
+    <div class="role-content">
+      <div class="form-group">
+        <label for="rolSelect">Rol del sistema</label>
+
+        <select
+          id="rolSelect"
+          class="form-select role-select"
+          [value]="rolSeleccionado"
+          (change)="cambiarRol($any($event.target).value)"
+          [disabled]="cargando || guardando">
+
+          <option *ngFor="let rol of roles" [value]="rol">
+            {{ rol }}
+          </option>
+
+        </select>
+
+        <small>
+          Los cambios se aplican a todos los usuarios que tengan este rol.
+        </small>
+      </div>
+
+      <div class="selected-role">
+        <i class="bi bi-shield-check"></i>
+        <div>
+          <span>Configurando permisos para</span>
+          <strong>{{ rolSeleccionado }}</strong>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- CONTENEDOR DE PERMISOS -->
+  <section class="permissions-section">
+
+    <div class="permissions-header">
+      <div class="section-heading">
+        <div class="section-icon">
+          <i class="bi bi-grid-1x2"></i>
+        </div>
+
+        <div>
+          <h4>Permisos del sistema</h4>
+          <p>Activa o desactiva los módulos y las acciones permitidas.</p>
+        </div>
+      </div>
+
+      <span class="role-badge">
+        {{ rolSeleccionado }}
+      </span>
+    </div>
+
+    <!-- CARGANDO -->
+    <div class="loading-container" *ngIf="cargando">
+      <div class="spinner-border text-primary"></div>
+      <p>Cargando configuración de permisos...</p>
+    </div>
+
+    <!-- TARJETAS DE PERMISOS -->
+    <div
+      class="permissions-grid"
+      *ngIf="!cargando && permisosActuales">
+
+      <div
+        class="permission-card"
+        *ngFor="let grupo of gruposPermisos">
+
+        <div class="permission-card-header">
+          <div class="module-icon">
+            <ng-container [ngSwitch]="grupo.titulo">
+
+              <i *ngSwitchCase="'Dashboard'" class="bi bi-speedometer2"></i>
+              <i *ngSwitchCase="'Punto de venta'" class="bi bi-cart3"></i>
+              <i *ngSwitchCase="'Ventas'" class="bi bi-receipt"></i>
+              <i *ngSwitchCase="'Productos'" class="bi bi-box-seam"></i>
+              <i *ngSwitchCase="'Inventario'" class="bi bi-boxes"></i>
+              <i *ngSwitchCase="'Clientes'" class="bi bi-people"></i>
+              <i *ngSwitchCase="'Reportes'" class="bi bi-bar-chart"></i>
+              <i *ngSwitchCase="'Usuarios'" class="bi bi-person-gear"></i>
+              <i *ngSwitchCase="'Configuración'" class="bi bi-gear"></i>
+              <i *ngSwitchDefault class="bi bi-folder"></i>
+
+            </ng-container>
+          </div>
+
+          <div class="module-title">
+            <h5>{{ grupo.titulo }}</h5>
+            <span>{{ grupo.permisos.length }} permisos disponibles</span>
+          </div>
+        </div>
+
+        <div class="permission-list">
+
+          <div
+            class="permission-item"
+            *ngFor="let permiso of grupo.permisos">
+
+            <label [for]="permiso.campo">
+              {{ permiso.etiqueta }}
+            </label>
+
+            <div class="form-check form-switch">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                [id]="permiso.campo"
+                [checked]="permisosActuales[permiso.campo]"
+                (change)="cambiarPermiso(
+                  permiso.campo,
+                  $any($event.target).checked
+                )"
+                [disabled]="guardando">
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- SIN INFORMACIÓN -->
+    <div
+      class="empty-state"
+      *ngIf="!cargando && !permisosActuales && !mensaje">
+
+      <i class="bi bi-inbox"></i>
+      <h5>No hay permisos disponibles</h5>
+      <p>No se pudo encontrar una configuración para este rol.</p>
+
+    </div>
+
+    <!-- ACCIONES -->
+    <div
+      class="permissions-footer"
+      *ngIf="!cargando && permisosActuales">
+
+      <div class="footer-info">
+        <i class="bi bi-info-circle"></i>
+        Recuerda guardar los cambios realizados.
+      </div>
+
+      <button
+        type="button"
+        class="btn-save"
+        (click)="guardarPermisos()"
+        [disabled]="guardando">
+
+        <i
+          class="bi"
+          [ngClass]="guardando ? 'bi-hourglass-split' : 'bi-save'">
+        </i>
+
+        {{ guardando ? 'Guardando...' : 'Guardar permisos' }}
+
+      </button>
+
+    </div>
+
+  </section>
+
+</div>

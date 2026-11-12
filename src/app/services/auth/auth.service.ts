@@ -14,8 +14,8 @@ import {
 })
 export class AuthService {
 
-  //private apiUrl = 'http://localhost:8080/api/auth';
-  private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api/auth';
+  private apiUrl = 'http://localhost:8080/api/auth';
+  //private apiUrl = 'https://ventas-pos-production-19f004a6.up.railway.app/api/auth';
   private storageKey = 'posctvm_usuario';
 
   constructor(private http: HttpClient) {}

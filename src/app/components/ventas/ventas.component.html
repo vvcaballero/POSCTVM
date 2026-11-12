@@ -30,6 +30,7 @@
 
   <!-- INDICADORES -->
   <section class="stats-grid">
+
     <article class="stat-card">
       <div class="stat-icon blue"><i class="bi bi-receipt"></i></div>
       <div>
@@ -46,13 +47,17 @@
       </div>
     </article>
 
-    <article class="stat-card">
-      <div class="stat-icon purple"><i class="bi bi-currency-dollar"></i></div>
-      <div>
-        <span>Importe vendido</span>
-        <strong>{{ importeVentasPagadas | currency:'MXN':'symbol':'1.2-2' }}</strong>
-      </div>
-    </article>
+    @if (esAdmin()) {
+      <article class="stat-card">
+        <div class="stat-icon purple">
+          <i class="bi bi-currency-dollar"></i>
+        </div>
+        <div>
+          <span>Importe vendido</span>
+          <strong>{{ importeVentasPagadas | currency:'MXN':'symbol':'1.2-2' }}</strong>
+        </div>
+      </article>
+    }
 
     <article class="stat-card">
       <div class="stat-icon red"><i class="bi bi-x-circle"></i></div>
@@ -61,10 +66,12 @@
         <strong>{{ totalVentasCanceladas }}</strong>
       </div>
     </article>
+
   </section>
 
   <!-- FILTROS -->
   <section class="filters-card">
+
     <div class="filters-heading">
       <div>
         <h2><i class="bi bi-funnel"></i> Filtros de búsqueda</h2>
@@ -77,6 +84,7 @@
     </div>
 
     <div class="filters-grid">
+
       <div class="filter-group search-filter">
         <label>Buscar</label>
         <div class="search-input">
@@ -127,11 +135,13 @@
         <label>Fecha hasta</label>
         <input type="date" name="fechaHasta" [(ngModel)]="fechaHasta">
       </div>
+
     </div>
   </section>
 
   <!-- TABLA -->
   <section class="table-card">
+
     <div class="table-heading">
       <div>
         <h2>Registro de ventas</h2>
@@ -145,6 +155,7 @@
     </div>
 
     <div class="table-responsive" *ngIf="!cargando">
+
       <table>
         <thead>
           <tr>
@@ -152,16 +163,22 @@
             <th>Fecha</th>
             <th>Cliente</th>
             <th>Usuario</th>
-            <th>Subtotal</th>
-            <th>Descuento</th>
-            <th>Total</th>
+
+            @if (esAdmin()) {
+              <th>Subtotal</th>
+              <th>Descuento</th>
+              <th>Total</th>
+            }
+
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
         </thead>
 
         <tbody>
+
           <tr *ngFor="let venta of ventasFiltradas">
+
             <td class="folio">#{{ venta.idVenta }}</td>
 
             <td>
@@ -172,15 +189,19 @@
 
             <td>{{ obtenerNombreUsuario(venta.idUsuario) }}</td>
 
-            <td>{{ venta.subtotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+            @if (esAdmin()) {
+              <td>
+                {{ venta.subtotal | currency:'MXN':'symbol':'1.2-2' }}
+              </td>
 
-            <td class="discount">
-              {{ venta.descuento | currency:'MXN':'symbol':'1.2-2' }}
-            </td>
+              <td class="discount">
+                {{ venta.descuento | currency:'MXN':'symbol':'1.2-2' }}
+              </td>
 
-            <td class="total-cell">
-              {{ venta.total | currency:'MXN':'symbol':'1.2-2' }}
-            </td>
+              <td class="total-cell">
+                {{ venta.total | currency:'MXN':'symbol':'1.2-2' }}
+              </td>
+            }
 
             <td>
               <span class="status"
@@ -192,6 +213,7 @@
 
             <td>
               <div class="actions">
+
                 <button type="button" class="btn-detail"
                   title="Ver detalle"
                   (click)="verDetalle(venta.idVenta)">
@@ -205,19 +227,23 @@
                   (click)="cancelarVenta(venta)">
                   <i class="bi bi-x-circle"></i>
                 </button>
+
               </div>
             </td>
+
           </tr>
 
           <tr *ngIf="ventasFiltradas.length === 0">
-            <td colspan="9" class="empty-state">
+            <td [attr.colspan]="esAdmin() ? 9 : 6" class="empty-state">
               <i class="bi bi-inbox"></i>
               <strong>No se encontraron ventas</strong>
               <span>Prueba modificando los filtros de búsqueda.</span>
             </td>
           </tr>
+
         </tbody>
       </table>
+
     </div>
   </section>
 
@@ -248,6 +274,7 @@
     </div>
 
     <div class="detail-info-grid">
+
       <div>
         <span>Cliente</span>
         <strong>{{ obtenerNombreCliente(detalle.venta.idCliente) }}</strong>
@@ -262,6 +289,7 @@
         <span>Estado</span>
         <strong>{{ detalle.venta.estado }}</strong>
       </div>
+
     </div>
 
     <h3>Productos vendidos</h3>
@@ -279,12 +307,21 @@
         </thead>
 
         <tbody>
+
           <tr *ngFor="let item of detalle.detalles">
+
             <td>{{ obtenerNombreProducto(item.idProducto) }}</td>
             <td>{{ item.idProducto }}</td>
             <td>{{ item.cantidad }}</td>
-            <td>{{ item.precioUnitario | currency:'MXN':'symbol':'1.2-2' }}</td>
-            <td>{{ calcularSubtotalDetalle(item) | currency:'MXN':'symbol':'1.2-2' }}</td>
+
+            <td>
+              {{ item.precioUnitario | currency:'MXN':'symbol':'1.2-2' }}
+            </td>
+
+            <td>
+              {{ calcularSubtotalDetalle(item) | currency:'MXN':'symbol':'1.2-2' }}
+            </td>
+
           </tr>
 
           <tr *ngIf="!detalle.detalles || detalle.detalles.length === 0">
@@ -292,23 +329,30 @@
               No hay productos registrados en el detalle.
             </td>
           </tr>
+
         </tbody>
       </table>
     </div>
 
     <div class="detail-bottom">
+
       <div class="payments-panel">
         <h3><i class="bi bi-credit-card"></i> Pagos registrados</h3>
 
         <div class="payment-row" *ngFor="let pago of detalle.pagos">
+
           <div>
             <strong>{{ nombreMetodoPago(pago.metodoPago) }}</strong>
+
             <small *ngIf="pago.referencia">
               Referencia: {{ pago.referencia }}
             </small>
           </div>
 
-          <strong>{{ pago.monto | currency:'MXN':'symbol':'1.2-2' }}</strong>
+          <strong>
+            {{ pago.monto | currency:'MXN':'symbol':'1.2-2' }}
+          </strong>
+
         </div>
 
         <p *ngIf="!detalle.pagos || detalle.pagos.length === 0">
@@ -317,26 +361,40 @@
 
         <div class="change-row">
           <span>Cambio entregado</span>
-          <strong>{{ detalle.cambio | currency:'MXN':'symbol':'1.2-2' }}</strong>
+          <strong>
+            {{ detalle.cambio | currency:'MXN':'symbol':'1.2-2' }}
+          </strong>
         </div>
+
       </div>
 
-      <div class="totals-panel">
-        <div>
-          <span>Subtotal</span>
-          <strong>{{ detalle.venta.subtotal | currency:'MXN':'symbol':'1.2-2' }}</strong>
-        </div>
+      @if (esAdmin()) {
+        <div class="totals-panel">
 
-        <div>
-          <span>Descuento</span>
-          <strong>{{ detalle.venta.descuento | currency:'MXN':'symbol':'1.2-2' }}</strong>
-        </div>
+          <div>
+            <span>Subtotal</span>
+            <strong>
+              {{ detalle.venta.subtotal | currency:'MXN':'symbol':'1.2-2' }}
+            </strong>
+          </div>
 
-        <div class="grand-total">
-          <span>Total</span>
-          <strong>{{ detalle.venta.total | currency:'MXN':'symbol':'1.2-2' }}</strong>
+          <div>
+            <span>Descuento</span>
+            <strong>
+              {{ detalle.venta.descuento | currency:'MXN':'symbol':'1.2-2' }}
+            </strong>
+          </div>
+
+          <div class="grand-total">
+            <span>Total</span>
+            <strong>
+              {{ detalle.venta.total | currency:'MXN':'symbol':'1.2-2' }}
+            </strong>
+          </div>
+
         </div>
-      </div>
+      }
+
     </div>
 
   </section>

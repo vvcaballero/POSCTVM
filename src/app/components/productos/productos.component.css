@@ -1,18 +1,389 @@
-.card {
-  border: none;
-  border-radius: 10px;
+
+.productos-page {
+  min-height: 100%;
+  background: #f5f7fb;
 }
 
-.table th,
-.table td {
-  white-space: nowrap;
-  vertical-align: middle;
+/* ENCABEZADO */
+
+.productos-header h2 {
+  color: #1e293b;
+  font-size: 1.7rem;
+}
+
+.header-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8efff;
+  color: #3563d8;
+  font-size: 1.3rem;
+}
+
+.btn-nuevo {
+  border: none;
+  border-radius: 9px;
+  padding: 11px 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(37, 99, 235, .15);
+}
+
+/* TARJETAS */
+
+.productos-card,
+.formulario-card {
+  border: 1px solid #e8edf4;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 14px rgba(15, 23, 42, .04);
+  overflow: hidden;
+}
+
+.formulario-card .card-header {
+  background: #f8faff;
+  color: #26344a;
+  font-weight: 700;
+  padding: 16px 20px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.formulario-card .card-body {
+  padding: 24px;
 }
 
 .form-label {
+  color: #344054;
   font-weight: 600;
+  font-size: .88rem;
+}
+
+.form-control,
+.form-select {
+  border-radius: 8px;
+  border-color: #dce2eb;
+  padding: 10px 12px;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #7799ed;
+  box-shadow: 0 0 0 3px rgba(53, 99, 216, .10);
 }
 
 textarea {
   resize: vertical;
+}
+
+.form-actions button {
+  border-radius: 8px;
+  padding: 9px 16px;
+  font-weight: 600;
+}
+
+/* BARRA DE HERRAMIENTAS */
+
+.productos-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  padding: 22px 24px;
+  flex-wrap: wrap;
+}
+
+.productos-toolbar h5 {
+  color: #25334a;
+}
+
+.search-box {
+  position: relative;
+  width: 350px;
+  max-width: 100%;
+}
+
+.search-box > i {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #8995a7;
+  z-index: 2;
+}
+
+.search-box input {
+  height: 43px;
+  padding-left: 40px;
+  padding-right: 38px;
+  border-radius: 9px;
+  background: #f9fafc;
+  font-size: .9rem;
+}
+
+.btn-clear-search {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  color: #8b95a5;
+}
+
+/* INFORMACIÓN */
+
+.table-info {
+  background: #f8faff;
+  border-top: 1px solid #edf0f5;
+  border-bottom: 1px solid #edf0f5;
+  padding: 12px 24px;
+  color: #68758a;
+  font-size: .86rem;
+}
+
+.table-info strong {
+  color: #29374d;
+}
+
+.search-result {
+  color: #3563d8;
+}
+
+/* TABLA */
+
+.productos-table {
+  min-width: 1050px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.productos-table thead th {
+  background: #f1f4f9;
+  color: #657188;
+  font-size: .73rem;
+  font-weight: 700;
+  letter-spacing: .045em;
+  padding: 15px 16px;
+  white-space: nowrap;
+  border-bottom: 1px solid #e5eaf1;
+}
+
+.productos-table tbody td {
+  padding: 15px 16px;
+  color: #465368;
+  font-size: .86rem;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.productos-table tbody tr {
+  transition: background .18s ease;
+}
+
+.productos-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.productos-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.product-id {
+  color: #8793a5;
+  font-size: .82rem;
+  font-weight: 600;
+}
+
+.product-name {
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+  gap: 3px;
+}
+
+.product-name strong {
+  color: #263449;
+  font-size: .9rem;
+}
+
+.product-name small {
+  color: #8994a5;
+  font-size: .76rem;
+}
+
+.product-name .product-description {
+  max-width: 190px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-label {
+  display: inline-block;
+  background: #f0f4ff;
+  color: #526da9;
+  padding: 6px 9px;
+  border-radius: 6px;
+  font-size: .78rem;
+  white-space: nowrap;
+}
+
+.price-sale {
+  color: #198754;
+}
+
+.stock-value {
+  display: inline-block;
+  min-width: 35px;
+  text-align: center;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #edf6ff;
+  color: #2866a5;
+  font-weight: 700;
+}
+
+.stock-value.stock-low {
+  background: #fff0e9;
+  color: #d45b25;
+}
+
+/* ESTADOS */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: .76rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.status-badge span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.status-active {
+  color: #16804a;
+  background: #e8f7ef;
+}
+
+.status-active span {
+  background: #20a464;
+}
+
+.status-inactive {
+  color: #747e8d;
+  background: #eef0f3;
+}
+
+.status-inactive span {
+  background: #8993a1;
+}
+
+/* ACCIONES */
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+}
+
+.btn-action {
+  width: 33px;
+  height: 33px;
+  border: none;
+  border-radius: 7px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s ease;
+}
+
+.btn-edit {
+  background: #fff5df;
+  color: #d18b12;
+}
+
+.btn-edit:hover {
+  background: #f4dfb2;
+}
+
+.btn-delete {
+  background: #fff0f0;
+  color: #d94a4a;
+}
+
+.btn-delete:hover {
+  background: #f8d5d5;
+}
+
+/* SIN RESULTADOS */
+
+.empty-state {
+  text-align: center;
+  padding: 55px 20px;
+}
+
+.empty-state > i {
+  font-size: 2.5rem;
+  color: #b5c0d0;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.empty-state h6 {
+  color: #344054;
+  font-weight: 700;
+}
+
+.empty-state p {
+  color: #929cac;
+  font-size: .88rem;
+  margin-bottom: 15px;
+}
+
+/* PIE */
+
+.table-footer {
+  padding: 14px 24px;
+  background: #fafbfd;
+  border-top: 1px solid #edf0f5;
+  color: #8994a5;
+  font-size: .8rem;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .productos-page {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .productos-toolbar {
+    align-items: stretch;
+    padding: 18px;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+
+  .table-info {
+    padding: 12px 18px;
+  }
+
+  .formulario-card .card-body {
+    padding: 17px;
+  }
+
+  .productos-header h2 {
+    font-size: 1.4rem;
+  }
 }

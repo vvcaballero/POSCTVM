@@ -16,19 +16,26 @@ import { PedidosClientesComponent } from './components/pedidos-clientes/pedidos-
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MainLayoutComponent } from './layout/main-layout/main-layout.component';
 
+import { permisosGuard } from './guards/permisos.guard';
+
 export const routes: Routes = [
+
   {
     path: 'login',
     component: LoginComponent
   },
+
   {
     path: '',
     redirectTo: 'login',
     pathMatch: 'full'
   },
+
   {
     path: '',
     component: MainLayoutComponent,
+    canActivateChild: [permisosGuard],
+
     children: [
       { path: 'dashboard', component: DashboardComponent },
       { path: 'productos', component: ProductosComponent },
@@ -43,8 +50,10 @@ export const routes: Routes = [
       { path: 'configuracion', component: ConfiguracionComponent }
     ]
   },
+
   {
     path: '**',
     redirectTo: 'login'
   }
+
 ];

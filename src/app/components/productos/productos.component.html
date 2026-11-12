@@ -1,29 +1,45 @@
-<main class="container-fluid py-4">
+
+<main class="productos-page container-fluid py-4">
 
   <!-- ENCABEZADO -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <div class="productos-header d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
 
     <div>
-      <h2 class="fw-bold mb-1">Productos</h2>
-      <p class="text-muted mb-0">Administración del catálogo de productos</p>
+      <div class="d-flex align-items-center gap-2 mb-1">
+        <span class="header-icon">
+          <i class="bi bi-box-seam"></i>
+        </span>
+        <h2 class="fw-bold mb-0">Productos</h2>
+      </div>
+
+      <p class="text-muted mb-0">
+        Administra y consulta el catálogo de productos
+      </p>
     </div>
 
-    <button class="btn btn-primary"
-            type="button"
-            (click)="nuevoProducto()">
-      <i class="bi bi-plus-circle me-2"></i>
-      Nuevo producto
-    </button>
+ @if (esAdmin()) {
+  <button
+    class="btn btn-primary btn-nuevo"
+    type="button"
+    (click)="nuevoProducto()">
+
+    <i class="bi bi-plus-lg me-2"></i>
+    Nuevo producto
+  </button>
+}
 
   </div>
 
   <!-- FORMULARIO -->
   @if (mostrarFormulario()) {
 
-    <div class="card shadow-sm mb-4">
+    <div class="card formulario-card mb-4">
 
-      <div class="card-header bg-dark text-white">
-        {{ editando() ? 'Editar producto' : 'Registrar producto' }}
+      <div class="card-header">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi" [class.bi-pencil-square]="editando()" [class.bi-plus-circle]="!editando()"></i>
+          <span>{{ editando() ? 'Editar producto' : 'Registrar producto' }}</span>
+        </div>
       </div>
 
       <div class="card-body">
@@ -34,28 +50,32 @@
 
             <div class="col-md-4">
               <label class="form-label">Código *</label>
-              <input type="text"
-                     class="form-control"
-                     name="codigo"
-                     [(ngModel)]="producto.codigo"
-                     required>
+              <input
+                type="text"
+                class="form-control"
+                name="codigo"
+                [(ngModel)]="producto.codigo"
+                required>
             </div>
 
             <div class="col-md-4">
               <label class="form-label">Nombre *</label>
-              <input type="text"
-                     class="form-control"
-                     name="nombre"
-                     [(ngModel)]="producto.nombre"
-                     required>
+              <input
+                type="text"
+                class="form-control"
+                name="nombre"
+                [(ngModel)]="producto.nombre"
+                required>
             </div>
 
             <div class="col-md-4">
               <label class="form-label">Categoría *</label>
-              <select class="form-select"
-                      name="idCategoria"
-                      [(ngModel)]="producto.idCategoria"
-                      required>
+              <select
+                class="form-select"
+                name="idCategoria"
+                [(ngModel)]="producto.idCategoria"
+                required>
+
                 <option [ngValue]="0">Seleccionar categoría</option>
 
                 @for (categoria of categorias(); track categoria.idCategoria) {
@@ -69,77 +89,86 @@
 
             <div class="col-md-12">
               <label class="form-label">Descripción</label>
-              <textarea class="form-control"
-                        name="descripcion"
-                        rows="2"
-                        [(ngModel)]="producto.descripcion">
+              <textarea
+                class="form-control"
+                name="descripcion"
+                rows="2"
+                [(ngModel)]="producto.descripcion">
               </textarea>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Precio de compra *</label>
-              <input type="number"
-                     class="form-control"
-                     name="precioCompra"
-                     min="0"
-                     step="0.01"
-                     [(ngModel)]="producto.precioCompra"
-                     required>
+              <input
+                type="number"
+                class="form-control"
+                name="precioCompra"
+                min="0"
+                step="0.01"
+                [(ngModel)]="producto.precioCompra"
+                required>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Precio de venta *</label>
-              <input type="number"
-                     class="form-control"
-                     name="precioVenta"
-                     min="0"
-                     step="0.01"
-                     [(ngModel)]="producto.precioVenta"
-                     required>
+              <input
+                type="number"
+                class="form-control"
+                name="precioVenta"
+                min="0"
+                step="0.01"
+                [(ngModel)]="producto.precioVenta"
+                required>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Stock *</label>
-              <input type="number"
-                     class="form-control"
-                     name="stock"
-                     min="0"
-                     [(ngModel)]="producto.stock"
-                     required>
+              <input
+                type="number"
+                class="form-control"
+                name="stock"
+                min="0"
+                [(ngModel)]="producto.stock"
+                required>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Stock mínimo *</label>
-              <input type="number"
-                     class="form-control"
-                     name="stockMinimo"
-                     min="0"
-                     [(ngModel)]="producto.stockMinimo"
-                     required>
+              <input
+                type="number"
+                class="form-control"
+                name="stockMinimo"
+                min="0"
+                [(ngModel)]="producto.stockMinimo"
+                required>
             </div>
 
             <div class="col-md-3">
               <label class="form-label">Estado</label>
-              <select class="form-select"
-                      name="activo"
-                      [(ngModel)]="producto.activo">
+              <select
+                class="form-select"
+                name="activo"
+                [(ngModel)]="producto.activo">
+
                 <option [ngValue]="true">Activo</option>
                 <option [ngValue]="false">Inactivo</option>
+
               </select>
             </div>
 
           </div>
 
-          <div class="mt-4 d-flex gap-2">
+          <div class="form-actions mt-4 d-flex gap-2">
 
             <button type="submit" class="btn btn-success">
-              <i class="bi bi-save me-2"></i>
-              {{ editando() ? 'Actualizar' : 'Guardar' }}
+              <i class="bi bi-check-circle me-2"></i>
+              {{ editando() ? 'Actualizar producto' : 'Guardar producto' }}
             </button>
 
-            <button type="button"
-                    class="btn btn-secondary"
-                    (click)="cancelarFormulario()">
+            <button
+              type="button"
+              class="btn btn-light"
+              (click)="cancelarFormulario()">
               Cancelar
             </button>
 
@@ -152,79 +181,169 @@
 
   }
 
-  <!-- TABLA -->
-  <div class="card shadow-sm">
+  <!-- TABLA DE PRODUCTOS -->
+  <div class="card productos-card">
 
-    <div class="card-header bg-white py-3">
-      <h5 class="mb-0">Lista de productos</h5>
+    <!-- BARRA DE BÚSQUEDA -->
+    <div class="productos-toolbar">
+
+      <div>
+        <h5 class="mb-1 fw-bold">Listado de productos</h5>
+        <small class="text-muted">
+          Consulta y administra tus productos registrados
+        </small>
+      </div>
+
+      <div class="search-box">
+        <i class="bi bi-search"></i>
+
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Buscar por cualquier dato..."
+          [ngModel]="busqueda()"
+          (ngModelChange)="busqueda.set($event)"
+          [ngModelOptions]="{standalone: true}">
+
+        @if (busqueda()) {
+          <button
+            type="button"
+            class="btn-clear-search"
+            title="Limpiar búsqueda"
+            (click)="busqueda.set('')">
+            <i class="bi bi-x-circle-fill"></i>
+          </button>
+        }
+
+      </div>
+
     </div>
 
+    <!-- INFORMACIÓN -->
+    <div class="table-info d-flex justify-content-between align-items-center flex-wrap gap-2">
+
+      <span>
+        <i class="bi bi-box-seam me-2"></i>
+        Productos encontrados:
+        <strong>{{ productosFiltrados().length }}</strong>
+      </span>
+
+      @if (busqueda()) {
+        <span class="search-result">
+          Resultados para: <strong>{{ busqueda() }}</strong>
+        </span>
+      }
+
+    </div>
+
+    <!-- TABLA -->
     <div class="table-responsive">
 
-      <table class="table table-striped table-hover align-middle mb-0">
+      <table class="table productos-table align-middle mb-0">
 
-        <thead class="table-dark">
+        <thead>
           <tr>
             <th>ID</th>
-            <th>Código</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Categoría</th>
-            <th>Precio compra</th>
-            <th>Precio venta</th>
-            <th>Stock</th>
-            <th>Stock mínimo</th>
-            <th>Estado</th>
-            <th>Acciones</th>
+            <th>PRODUCTO</th>
+            <th>CATEGORÍA</th>
+            <th>PRECIO COMPRA</th>
+            <th>PRECIO VENTA</th>
+            <th>STOCK</th>
+            <th>STOCK MÍNIMO</th>
+            <th>ESTADO</th>
+            <th class="text-center">ACCIONES</th>
           </tr>
         </thead>
 
         <tbody>
 
-          @for (producto of productos(); track producto.idProducto) {
+          @for (producto of productosFiltrados(); track producto.idProducto) {
 
             <tr>
 
-              <td>{{ producto.idProducto }}</td>
-              <td>{{ producto.codigo }}</td>
-              <td>{{ producto.nombre }}</td>
-              <td>{{ producto.descripcion }}</td>
-
               <td>
-                {{ obtenerNombreCategoria(producto.idCategoria) }}
+                <span class="product-id">#{{ producto.idProducto }}</span>
               </td>
 
-              <td>{{ producto.precioCompra | currency:'MXN' }}</td>
-              <td>{{ producto.precioVenta | currency:'MXN' }}</td>
-              <td>{{ producto.stock }}</td>
-              <td>{{ producto.stockMinimo }}</td>
+              <td>
+                <div class="product-name">
+                  <strong>{{ producto.nombre }}</strong>
+                  <small>
+                    {{ producto.codigo }}
+                  </small>
+                  @if (producto.descripcion) {
+                    <small class="product-description">
+                      {{ producto.descripcion }}
+                    </small>
+                  }
+                </div>
+              </td>
+
+              <td>
+                <span class="category-label">
+                  <i class="bi bi-tag me-1"></i>
+                  {{ obtenerNombreCategoria(producto.idCategoria) }}
+                </span>
+              </td>
+
+              <td>
+                {{ producto.precioCompra | currency:'MXN' }}
+              </td>
+
+              <td>
+                <strong class="price-sale">
+                  {{ producto.precioVenta | currency:'MXN' }}
+                </strong>
+              </td>
+
+              <td>
+                <span
+                  class="stock-value"
+                  [class.stock-low]="producto.stock <= producto.stockMinimo">
+                  {{ producto.stock }}
+                </span>
+              </td>
+
+              <td>
+                {{ producto.stockMinimo }}
+              </td>
 
               <td>
                 @if (producto.activo) {
-                  <span class="badge bg-success">Activo</span>
+                  <span class="status-badge status-active">
+                    <span></span> Activo
+                  </span>
                 } @else {
-                  <span class="badge bg-secondary">Inactivo</span>
+                  <span class="status-badge status-inactive">
+                    <span></span> Inactivo
+                  </span>
                 }
               </td>
 
               <td>
-                <div class="d-flex gap-2">
+           <div class="action-buttons">
 
-                  <button class="btn btn-sm btn-warning"
-                          type="button"
-                          title="Editar"
-                          (click)="editarProducto(producto)">
-                    <i class="bi bi-pencil"></i>
-                  </button>
+      @if (esAdmin()) {
 
-                  <button class="btn btn-sm btn-danger"
-                          type="button"
-                          title="Eliminar"
-                          (click)="eliminarProducto(producto.idProducto!)">
-                    <i class="bi bi-trash"></i>
-                  </button>
+        <button
+          class="btn-action btn-edit"
+          type="button"
+          title="Editar producto"
+          (click)="editarProducto(producto)">
+          <i class="bi bi-pencil-square"></i>
+        </button>
 
-                </div>
+        <button
+          class="btn-action btn-delete"
+          type="button"
+          title="Eliminar producto"
+          (click)="eliminarProducto(producto.idProducto!)">
+          <i class="bi bi-trash3"></i>
+        </button>
+
+      }
+
+</div>
               </td>
 
             </tr>
@@ -232,8 +351,28 @@
           } @empty {
 
             <tr>
-              <td colspan="11" class="text-center py-4">
-                No hay productos registrados.
+              <td colspan="9">
+
+                <div class="empty-state">
+                  <i class="bi bi-search"></i>
+
+                  @if (busqueda()) {
+                    <h6>No se encontraron resultados</h6>
+                    <p>No hay productos que coincidan con "{{ busqueda() }}"</p>
+
+                    <button
+                      class="btn btn-outline-primary btn-sm"
+                      type="button"
+                      (click)="busqueda.set('')">
+                      Limpiar búsqueda
+                    </button>
+                  } @else {
+                    <h6>No hay productos registrados</h6>
+                    <p>Cuando registres productos aparecerán aquí.</p>
+                  }
+
+                </div>
+
               </td>
             </tr>
 
@@ -244,6 +383,11 @@
       </table>
 
     </div>
+
+    <div class="table-footer">
+      Mostrando {{ productosFiltrados().length }} de {{ productos().length }} productos
+    </div>
+
   </div>
 
 </main>
