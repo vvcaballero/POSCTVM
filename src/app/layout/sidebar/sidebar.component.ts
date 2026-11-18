@@ -6,8 +6,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
 import { PermisosService } from '../../services/permisos/permisos.service';
 import { PermisoRol } from '../../interfaces/permiso-rol.interface';
-
-
+import { APP_VERSION } from '../../config/version';
 
 
 type PermisoCampo = Exclude<keyof PermisoRol, 'id' | 'rol'>;
@@ -26,6 +25,7 @@ type PermisoCampo = Exclude<keyof PermisoRol, 'id' | 'rol'>;
 export class SidebarComponent implements OnInit {
 
   permisos: PermisoRol | null = null;
+  version = APP_VERSION;
 
   constructor(
     private authService: AuthService,

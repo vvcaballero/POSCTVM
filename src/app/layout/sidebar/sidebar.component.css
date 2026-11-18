@@ -144,4 +144,12 @@
   .coming-soon {
     display: none;
   }
+
+.app-version {
+  display: block;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #8b95a5;
+  text-align: center;
+}
 }

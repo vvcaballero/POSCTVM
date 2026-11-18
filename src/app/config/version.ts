@@ -1,0 +1,1 @@
+export const APP_VERSION = '1.0.0';// version estable de la aplicacion  FRON END POSCTVM
