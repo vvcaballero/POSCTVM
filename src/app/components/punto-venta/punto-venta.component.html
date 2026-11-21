@@ -1,3 +1,4 @@
+
 <div class="pos-container">
 
   <!-- ENCABEZADO -->
@@ -35,6 +36,7 @@
 
   <!-- VENTA REGISTRADA -->
   <div *ngIf="ultimaVenta" class="sale-success">
+
     <div class="success-icon">
       <i class="bi bi-check-lg"></i>
     </div>
@@ -68,10 +70,33 @@
       </p>
     </div>
 
-    <button type="button" class="btn-new-sale" (click)="ultimaVenta = null">
+    <!-- IMPRIMIR -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="imprimirTicket()">
+      <i class="bi bi-printer me-2"></i>
+      Imprimir ticket
+    </button>
+
+    <!-- COMPARTIR PDF -->
+    <button
+      type="button"
+      class="btn btn-success"
+      (click)="abrirModalWhatsApp()">
+      <i class="bi bi-whatsapp me-2"></i>
+      Enviar ticket PDF
+    </button>
+
+    <!-- NUEVA VENTA -->
+    <button
+      type="button"
+      class="btn-new-sale"
+      (click)="ultimaVenta = null">
       <i class="bi bi-plus-circle"></i>
       Nueva venta
     </button>
+
   </div>
 
   <div class="pos-layout">
@@ -171,7 +196,7 @@
         </button>
       </div>
 
-      <!-- USUARIO (sesión actual, solo lectura) -->
+      <!-- USUARIO -->
       <div class="form-group">
         <label>Usuario que realiza la venta</label>
 
@@ -388,6 +413,270 @@
       </p>
 
     </section>
+
+  </div>
+
+</div>
+
+<!-- ====================================== -->
+<!-- TICKET PARA IMPRESIÓN Y GENERACIÓN PDF -->
+<!-- ====================================== -->
+
+<div class="ticket-print" *ngIf="ultimaVenta">
+
+  <!-- ENCABEZADO -->
+  <div class="ticket-header">
+    <div class="ticket-brand-icon">
+      <i class="bi bi-shop"></i>
+    </div>
+
+    <h2>POSCTVM</h2>
+    <p class="ticket-system-name">SISTEMA PUNTO DE VENTA</p>
+    <div class="ticket-header-line"></div>
+    <h3>COMPROBANTE DE VENTA</h3>
+    <span class="ticket-status">VENTA REGISTRADA</span>
+  </div>
+
+  <!-- FOLIO -->
+  <div class="ticket-folio">
+    <span>FOLIO DE VENTA</span>
+    <strong>#{{ ultimaVenta.venta.idVenta }}</strong>
+  </div>
+
+  <!-- INFORMACIÓN -->
+  <div class="ticket-info">
+
+    <div class="ticket-info-row">
+      <span><i class="bi bi-calendar3"></i> Fecha</span>
+      <strong>
+        {{ ultimaVenta.venta.fechaVenta | date:'dd/MM/yyyy HH:mm' }}
+      </strong>
+    </div>
+
+    <div class="ticket-info-row">
+      <span><i class="bi bi-person"></i> Cliente</span>
+      <strong>{{ nombreClienteVenta }}</strong>
+    </div>
+
+    <div class="ticket-info-row">
+      <span><i class="bi bi-person-badge"></i> Atendió</span>
+      <strong>{{ usuarioUltimaVenta }}</strong>
+    </div>
+
+  </div>
+
+  <!-- DETALLE -->
+  <div class="ticket-section-heading">
+    <span>DETALLE DE COMPRA</span>
+    <span>{{ ultimaVenta.detalles.length }} ARTÍCULO(S)</span>
+  </div>
+
+  <div class="ticket-products">
+
+    <div
+      *ngFor="let detalle of ultimaVenta.detalles"
+      class="ticket-product">
+
+      <div class="ticket-product-name">
+        {{ obtenerNombreProducto(detalle.idProducto) }}
+      </div>
+
+      <div class="ticket-product-details">
+        <span>
+          {{ detalle.cantidad }} x
+          {{ detalle.precioUnitario | currency:'MXN':'symbol-narrow' }}
+        </span>
+
+        <strong>
+          {{ detalle.subtotal | currency:'MXN':'symbol-narrow' }}
+        </strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- TOTALES -->
+  <div class="ticket-totals">
+
+    <div class="ticket-total-line">
+      <span>Subtotal</span>
+      <strong>
+        {{ ultimaVenta.venta.subtotal | currency:'MXN':'symbol-narrow' }}
+      </strong>
+    </div>
+
+    <div class="ticket-total-line">
+      <span>Descuento</span>
+      <strong>
+        {{ ultimaVenta.venta.descuento | currency:'MXN':'symbol-narrow' }}
+      </strong>
+    </div>
+
+    <div class="ticket-grand-total">
+      <span>TOTAL A PAGAR</span>
+      <strong>
+        {{ ultimaVenta.venta.total | currency:'MXN':'symbol-narrow' }}
+      </strong>
+    </div>
+
+  </div>
+
+  <!-- PAGOS -->
+  <div class="ticket-section-heading ticket-payment-heading">
+    <span>INFORMACIÓN DE PAGO</span>
+  </div>
+
+  <div class="ticket-payments">
+
+    <div
+      *ngFor="let pago of ultimaVenta.pagos"
+      class="ticket-total-line">
+
+      <span>
+        <i class="bi bi-check-circle"></i>
+        {{ pago.metodoPago }}
+      </span>
+
+      <strong>
+        {{ pago.monto | currency:'MXN':'symbol-narrow' }}
+      </strong>
+
+    </div>
+
+    <div class="ticket-change">
+      <span>Cambio entregado</span>
+      <strong>
+        {{ ultimaVenta.cambio | currency:'MXN':'symbol-narrow' }}
+      </strong>
+    </div>
+
+  </div>
+
+  <!-- PIE -->
+  <div class="ticket-footer">
+
+    <div class="ticket-thanks">
+      <i class="bi bi-heart-fill"></i>
+      <strong>¡Gracias por su compra!</strong>
+    </div>
+
+    <p>Esperamos que vuelva pronto.</p>
+    <p class="ticket-conserve">Conserve este comprobante</p>
+
+    <!-- CÓDIGO VISUAL DECORATIVO -->
+    <div class="ticket-barcode" aria-hidden="true"></div>
+
+    <strong class="ticket-barcode-number">
+      POSCTVM - {{ ultimaVenta.venta.idVenta }}
+    </strong>
+
+    <div class="ticket-footer-brand">
+      POSCTVM
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ====================================== -->
+<!-- MODAL COMPARTIR TICKET PDF -->
+<!-- ====================================== -->
+
+<div
+  class="modal-overlay"
+  *ngIf="mostrarModalWhatsApp"
+  (click)="cerrarModalWhatsApp()">
+
+  <div
+    class="whatsapp-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="whatsappModalTitle"
+    (click)="$event.stopPropagation()">
+
+    <!-- ENCABEZADO DEL MODAL -->
+    <div class="modal-header-custom">
+
+      <div class="modal-title-content">
+        <i class="bi bi-whatsapp"></i>
+        <h3 id="whatsappModalTitle">
+          Compartir ticket
+        </h3>
+      </div>
+
+      <button
+        type="button"
+        class="btn-close-modal"
+        aria-label="Cerrar"
+        (click)="cerrarModalWhatsApp()">
+
+        <i class="bi bi-x-lg"></i>
+      </button>
+
+    </div>
+
+    <!-- DESCRIPCIÓN -->
+    <p class="modal-description">
+      Genera el comprobante de compra en PDF y compártelo
+      con tu cliente por WhatsApp.
+    </p>
+
+    <!-- REFERENCIA DE LA VENTA -->
+    <div class="whatsapp-sale-reference" *ngIf="ultimaVenta">
+
+      <span>Folio de venta</span>
+
+      <strong>
+        #{{ ultimaVenta.venta.idVenta }}
+      </strong>
+
+      <span>Total de compra</span>
+
+      <strong>
+        {{ ultimaVenta.venta.total | currency:'MXN':'symbol':'1.2-2' }}
+      </strong>
+
+    </div>
+
+    <!-- INFORMACIÓN DEL PDF -->
+    <div class="whatsapp-share-note">
+
+      <i class="bi bi-file-earmark-pdf"></i>
+
+      <div>
+        <strong>Comprobante en PDF</strong>
+
+        <small>
+          Se generará el ticket con todos los detalles de la compra,
+          incluyendo productos, cantidades, precios y pagos.
+        </small>
+      </div>
+
+    </div>
+
+    <!-- ACCIONES -->
+    <div class="modal-actions">
+
+      <button
+        type="button"
+        class="btn-cancel-modal"
+        (click)="cerrarModalWhatsApp()">
+
+        Cancelar
+      </button>
+
+      <button
+        type="button"
+        class="btn-send-whatsapp"
+        (click)="enviarTicketWhatsApp()">
+
+        <i class="bi bi-whatsapp"></i>
+        Generar y compartir PDF
+
+      </button>
+
+    </div>
 
   </div>
 

@@ -12,6 +12,8 @@ import { ProductosService } from '../../services/productos/productos.service';
 import { ClientesService } from '../../services/clientes/clientes.service';
 import { VentasService } from '../../services/ventas/ventas.service';
 import { AuthService } from '../../services/auth/auth.service';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 interface ProductoCarrito {
   producto: Producto;
@@ -29,12 +31,10 @@ export class PuntoVentaComponent implements OnInit {
 
   productos: Producto[] = [];
   clientes: Clientes[] = [];
-
   carrito: ProductoCarrito[] = [];
 
   busqueda = '';
   idCliente: number | null = null;
-
   descuento = 0;
 
   metodoPago: 'EFECTIVO' | 'TARJETA' | 'TRANSFERENCIA' = 'EFECTIVO';
@@ -48,7 +48,9 @@ export class PuntoVentaComponent implements OnInit {
 
   ultimaVenta: VentaCompleta | null = null;
 
-  // Nombre del usuario que hizo la última venta (se guarda al registrarla)
+  mostrarModalWhatsApp = false;
+  telefonoWhatsApp = '';
+
   usuarioUltimaVenta = '';
 
   constructor(
@@ -62,10 +64,8 @@ export class PuntoVentaComponent implements OnInit {
     this.cargarDatos();
   }
 
-  // USUARIO LOGUEADO (desde la sesión)
   get idUsuario(): number | null {
     const usuario: any = this.authService.getUsuarioActual();
-
     const id = usuario?.idUsuario ?? usuario?.id ?? null;
 
     return id !== null && id !== undefined ? Number(id) : null;
@@ -74,16 +74,13 @@ export class PuntoVentaComponent implements OnInit {
   get nombreUsuarioLogueado(): string {
     const usuario: any = this.authService.getUsuarioActual();
 
-    return (
-      usuario?.nombre ??
+    return usuario?.nombre ??
       usuario?.nombreUsuario ??
       usuario?.username ??
       usuario?.usuario ??
-      'Usuario'
-    );
+      'Usuario';
   }
 
-  // CARGAR CATÁLOGOS
   cargarDatos(): void {
     this.cargando = true;
 
@@ -91,7 +88,7 @@ export class PuntoVentaComponent implements OnInit {
       productos: this.productosService.getProductos(),
       clientes: this.clientesService.getClientes()
     }).subscribe({
-      next: (response) => {
+      next: response => {
         this.productos = Array.isArray(response.productos.body)
           ? response.productos.body as Producto[]
           : [];
@@ -112,7 +109,6 @@ export class PuntoVentaComponent implements OnInit {
     });
   }
 
-  // PRODUCTOS FILTRADOS
   get productosFiltrados(): Producto[] {
     const texto = this.busqueda.trim().toLowerCase();
 
@@ -122,14 +118,10 @@ export class PuntoVentaComponent implements OnInit {
 
       return producto.activo !== false &&
         Number(producto.stock) > 0 &&
-        (
-          nombre.includes(texto) ||
-          codigo.includes(texto)
-        );
+        (nombre.includes(texto) || codigo.includes(texto));
     });
   }
 
-  // AGREGAR PRODUCTO
   agregarProducto(producto: Producto): void {
     if (!producto.idProducto || producto.stock <= 0) {
       return;
@@ -150,17 +142,13 @@ export class PuntoVentaComponent implements OnInit {
 
       existente.cantidad++;
     } else {
-      this.carrito.push({
-        producto,
-        cantidad: 1
-      });
+      this.carrito.push({ producto, cantidad: 1 });
     }
 
     this.ultimaVenta = null;
     this.mensaje = '';
   }
 
-  // AUMENTAR CANTIDAD
   aumentarCantidad(item: ProductoCarrito): void {
     if (item.cantidad >= item.producto.stock) {
       this.mostrarMensaje(
@@ -174,7 +162,6 @@ export class PuntoVentaComponent implements OnInit {
     this.mensaje = '';
   }
 
-  // DISMINUIR CANTIDAD
   disminuirCantidad(item: ProductoCarrito): void {
     if (item.cantidad > 1) {
       item.cantidad--;
@@ -183,7 +170,6 @@ export class PuntoVentaComponent implements OnInit {
     }
   }
 
-  // ELIMINAR PRODUCTO
   eliminarProducto(item: ProductoCarrito): void {
     this.carrito = this.carrito.filter(
       producto =>
@@ -191,7 +177,6 @@ export class PuntoVentaComponent implements OnInit {
     );
   }
 
-  // VACIAR CARRITO
   limpiarCarrito(): void {
     this.carrito = [];
     this.descuento = 0;
@@ -199,31 +184,24 @@ export class PuntoVentaComponent implements OnInit {
     this.mensaje = '';
   }
 
-  // SUBTOTAL
   get subtotal(): number {
     return this.carrito.reduce(
       (total, item) =>
-        total + (Number(item.producto.precioVenta) * item.cantidad),
+        total + Number(item.producto.precioVenta) * item.cantidad,
       0
     );
   }
 
-  // DESCUENTO VALIDADO
   get descuentoValido(): number {
     const valor = Number(this.descuento) || 0;
 
-    return Math.min(
-      Math.max(valor, 0),
-      this.subtotal
-    );
+    return Math.min(Math.max(valor, 0), this.subtotal);
   }
 
-  // TOTAL
   get total(): number {
     return Math.max(0, this.subtotal - this.descuentoValido);
   }
 
-  // CANTIDAD DE PRODUCTOS
   get cantidadProductos(): number {
     return this.carrito.reduce(
       (total, item) => total + item.cantidad,
@@ -231,19 +209,14 @@ export class PuntoVentaComponent implements OnInit {
     );
   }
 
-  // CAMBIO
   get cambio(): number {
     if (this.metodoPago !== 'EFECTIVO') {
       return 0;
     }
 
-    return Math.max(
-      0,
-      (Number(this.montoRecibido) || 0) - this.total
-    );
+    return Math.max(0, (Number(this.montoRecibido) || 0) - this.total);
   }
 
-  // VALIDAR PAGO
   get pagoValido(): boolean {
     if (this.metodoPago === 'EFECTIVO') {
       return Number(this.montoRecibido) >= this.total;
@@ -252,7 +225,6 @@ export class PuntoVentaComponent implements OnInit {
     return true;
   }
 
-  // CAMBIAR MÉTODO DE PAGO
   cambiarMetodoPago(): void {
     if (this.metodoPago !== 'EFECTIVO') {
       this.montoRecibido = this.total;
@@ -261,7 +233,6 @@ export class PuntoVentaComponent implements OnInit {
     }
   }
 
-  // REGISTRAR VENTA
   registrarVenta(): void {
     if (this.procesandoVenta) {
       return;
@@ -278,18 +249,12 @@ export class PuntoVentaComponent implements OnInit {
     }
 
     if (this.carrito.length === 0) {
-      this.mostrarMensaje(
-        'Agrega al menos un producto al carrito.',
-        'error'
-      );
+      this.mostrarMensaje('Agrega al menos un producto al carrito.', 'error');
       return;
     }
 
     if (this.total <= 0) {
-      this.mostrarMensaje(
-        'El total de la venta debe ser mayor a cero.',
-        'error'
-      );
+      this.mostrarMensaje('El total de la venta debe ser mayor a cero.', 'error');
       return;
     }
 
@@ -301,10 +266,8 @@ export class PuntoVentaComponent implements OnInit {
       return;
     }
 
-    // VALIDAR STOCK
     const stockInsuficiente = this.carrito.find(
-      item =>
-        item.cantidad > Number(item.producto.stock)
+      item => item.cantidad > Number(item.producto.stock)
     );
 
     if (stockInsuficiente) {
@@ -312,21 +275,16 @@ export class PuntoVentaComponent implements OnInit {
         `Stock insuficiente para ${stockInsuficiente.producto.nombre}.`,
         'error'
       );
-
       this.cargarDatos();
       return;
     }
 
-    // VALIDAR DESCUENTO
     if (
       !Number.isFinite(Number(this.descuento)) ||
       Number(this.descuento) < 0 ||
       Number(this.descuento) > this.subtotal
     ) {
-      this.mostrarMensaje(
-        'El descuento no es válido.',
-        'error'
-      );
+      this.mostrarMensaje('El descuento no es válido.', 'error');
       return;
     }
 
@@ -334,16 +292,14 @@ export class PuntoVentaComponent implements OnInit {
       ? Number(this.montoRecibido)
       : this.total;
 
-    const pagos: PagoRequest[] = [
-      {
-        metodoPago: this.metodoPago,
-        monto: montoPago
-      }
-    ];
+    const pagos: PagoRequest[] = [{
+      metodoPago: this.metodoPago,
+      monto: montoPago
+    }];
 
     const venta: VentaRequest = {
       idCliente: this.idCliente,
-      idUsuario: idUsuario,
+      idUsuario,
       descuento: this.descuentoValido,
       detalles: this.carrito.map(item => ({
         idProducto: item.producto.idProducto!,
@@ -361,11 +317,7 @@ export class PuntoVentaComponent implements OnInit {
 
         const body = response.body;
 
-        if (
-          !body ||
-          !('venta' in body) ||
-          !body.venta?.idVenta
-        ) {
+        if (!body || !('venta' in body) || !body.venta?.idVenta) {
           this.mostrarMensaje(
             response.mensaje || 'No fue posible confirmar la venta.',
             'error'
@@ -381,7 +333,6 @@ export class PuntoVentaComponent implements OnInit {
           'success'
         );
 
-        // LIMPIAR DATOS DE LA OPERACIÓN
         this.carrito = [];
         this.descuento = 0;
         this.montoRecibido = 0;
@@ -389,7 +340,6 @@ export class PuntoVentaComponent implements OnInit {
         this.busqueda = '';
         this.metodoPago = 'EFECTIVO';
 
-        // ACTUALIZAR EXISTENCIAS
         this.productosService.getProductos().subscribe({
           next: productosResponse => {
             this.productos = Array.isArray(productosResponse.body)
@@ -417,7 +367,6 @@ export class PuntoVentaComponent implements OnInit {
     });
   }
 
-  // MENSAJES
   mostrarMensaje(
     mensaje: string,
     tipo: 'success' | 'error'
@@ -426,7 +375,6 @@ export class PuntoVentaComponent implements OnInit {
     this.tipoMensaje = tipo;
   }
 
-  // CLIENTE DE LA ÚLTIMA VENTA
   get nombreClienteVenta(): string {
     if (!this.ultimaVenta?.venta?.idCliente) {
       return 'Público general';
@@ -438,4 +386,236 @@ export class PuntoVentaComponent implements OnInit {
 
     return cliente?.nombre || 'Cliente';
   }
+
+  obtenerNombreProducto(idProducto: number): string {
+    const producto = this.productos.find(
+      p => p.idProducto === idProducto
+    );
+
+    return producto?.nombre || `Producto #${idProducto}`;
+  }
+
+  imprimirTicket(): void {
+    if (!this.ultimaVenta) {
+      return;
+    }
+
+    window.print();
+  }
+
+  abrirModalWhatsApp(): void {
+    if (!this.ultimaVenta) {
+      this.mostrarMensaje('No hay una venta para enviar.', 'error');
+      return;
+    }
+
+    this.telefonoWhatsApp = '';
+    this.mostrarModalWhatsApp = true;
+  }
+
+  cerrarModalWhatsApp(): void {
+    this.mostrarModalWhatsApp = false;
+    this.telefonoWhatsApp = '';
+  }
+
+  
+
+async enviarTicketWhatsApp(): Promise<void> {
+  if (!this.ultimaVenta) {
+    this.mostrarMensaje('No hay una venta para compartir.', 'error');
+    return;
+  }
+
+  try {
+    const archivo = await this.generarTicketPDF();
+
+    const venta = this.ultimaVenta;
+
+    const texto =
+      `Comprobante de compra POSCTVM.\n` +
+      `Folio: #${venta.venta.idVenta}\n` +
+      `Total: ${new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN'
+      }).format(Number(venta.venta.total) || 0)}`;
+
+    const navegador = navigator as Navigator & {
+      canShare?: (data: ShareData) => boolean;
+    };
+
+    const datosCompartir: ShareData = {
+      files: [archivo],
+      title: `Ticket #${venta.venta.idVenta}`,
+      text: texto
+    };
+
+    // Intentar compartir el PDF directamente.
+    if (
+      typeof navigator.share === 'function' &&
+      typeof navegador.canShare === 'function' &&
+      navegador.canShare({ files: [archivo] })
+    ) {
+      await navigator.share(datosCompartir);
+
+      this.cerrarModalWhatsApp();
+
+      this.mostrarMensaje(
+        'Se abrió la opción para compartir el ticket. Selecciona WhatsApp y el destinatario.',
+        'success'
+      );
+
+      return;
+    }
+
+    // Alternativa para navegadores que no permiten compartir archivos.
+    this.descargarTicketPDF(archivo);
+
+    this.cerrarModalWhatsApp();
+
+    this.mostrarMensaje(
+      'El ticket PDF se descargó. Ahora puedes adjuntarlo en el chat de WhatsApp del cliente.',
+      'success'
+    );
+
+  } catch (error: any) {
+
+    // El usuario puede cancelar voluntariamente el menú de compartir.
+    if (error?.name === 'AbortError') {
+      return;
+    }
+
+    console.error('Error al generar o compartir ticket:', error);
+
+    this.mostrarMensaje(
+      'No fue posible generar o compartir el ticket PDF.',
+      'error'
+    );
+  }
+}
+
+
+private async generarTicketPDF(): Promise<File> {
+  if (!this.ultimaVenta) {
+    throw new Error('No existe una venta para generar el ticket.');
+  }
+
+  const ticket = document.querySelector('.ticket-print') as HTMLElement | null;
+
+  if (!ticket) {
+    throw new Error('No se encontró el contenido del ticket.');
+  }
+
+  // Guardar los estilos originales para no afectar la impresión.
+  const estilosOriginales = ticket.getAttribute('style');
+
+  try {
+    // Mostrar temporalmente el ticket para poder capturarlo.
+    ticket.style.setProperty('display', 'block', 'important');
+    ticket.style.position = 'fixed';
+    ticket.style.left = '0';
+    ticket.style.top = '0';
+    ticket.style.width = '72mm';
+    ticket.style.maxWidth = '72mm';
+    ticket.style.margin = '0';
+    ticket.style.padding = '4mm';
+    ticket.style.boxSizing = 'border-box';
+    ticket.style.background = '#ffffff';
+    ticket.style.opacity = '0.01';
+    ticket.style.zIndex = '2147483647';
+
+    const canvas = await html2canvas(ticket, {
+      scale: 3,
+      backgroundColor: '#ffffff',
+      useCORS: true,
+      logging: false,
+      windowWidth: Math.max(window.innerWidth, 800),
+
+      // Ajustar la copia que html2canvas utiliza para capturar.
+      onclone: (documentoClonado) => {
+        const ticketClonado = documentoClonado.querySelector(
+          '.ticket-print'
+        ) as HTMLElement | null;
+
+        if (ticketClonado) {
+          ticketClonado.style.setProperty('display', 'block', 'important');
+          ticketClonado.style.setProperty('opacity', '1', 'important');
+          ticketClonado.style.position = 'static';
+          ticketClonado.style.left = 'auto';
+          ticketClonado.style.top = 'auto';
+          ticketClonado.style.zIndex = 'auto';
+          ticketClonado.style.width = '72mm';
+          ticketClonado.style.maxWidth = '72mm';
+          ticketClonado.style.margin = '0';
+          ticketClonado.style.padding = '4mm';
+        }
+      }
+    });
+
+    if (!canvas.width || !canvas.height) {
+      throw new Error('No fue posible capturar el ticket.');
+    }
+
+    // Configuración de papel térmico de 80 mm.
+    const anchoPagina = 80;
+    const margen = 4;
+    const anchoContenido = 72;
+
+    const altoContenido =
+      canvas.height * (anchoContenido / canvas.width);
+
+    const pdf = new jsPDF({
+      orientation: 'portrait',
+      unit: 'mm',
+      format: [anchoPagina, altoContenido + (margen * 2)],
+      compress: true
+    });
+
+    const imagen = canvas.toDataURL('image/jpeg', 0.95);
+
+    pdf.addImage(
+      imagen,
+      'JPEG',
+      margen,
+      margen,
+      anchoContenido,
+      altoContenido
+    );
+
+    const archivo = pdf.output('blob');
+
+    return new File(
+      [archivo],
+      `ticket-${this.ultimaVenta.venta.idVenta}.pdf`,
+      { type: 'application/pdf' }
+    );
+
+  } finally {
+    // Restaurar los estilos originales.
+    if (estilosOriginales === null) {
+      ticket.removeAttribute('style');
+    } else {
+      ticket.setAttribute('style', estilosOriginales);
+    }
+  }
+}
+
+private descargarTicketPDF(archivo: File): void {
+  const url = URL.createObjectURL(archivo);
+
+  const enlace = document.createElement('a');
+  enlace.href = url;
+  enlace.download = archivo.name;
+
+  document.body.appendChild(enlace);
+  enlace.click();
+  document.body.removeChild(enlace);
+
+  window.setTimeout(() => {
+    URL.revokeObjectURL(url);
+  }, 1000);
+}
+
+
+
+
 }
